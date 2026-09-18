@@ -1,0 +1,23 @@
+{
+    "$schema": "https://apify.com/schemas/v1/output.ide.json",
+    "actorOutputSchemaVersion": 1,
+    "title": "Cloud job-search outputs",
+    "properties": {
+        "summary": {
+            "type": "string",
+            "title": "Run summary",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/OUTPUT"
+        },
+        "report": {
+            "type": "string",
+            "title": "Email report",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/records/REPORT"
+        },
+        "jobs": { "type": "string", "title": "Qualified jobs", "template": "{{links.apiDefaultDatasetUrl}}/items" },
+        "files": {
+            "type": "string",
+            "title": "Generated files",
+            "template": "{{links.apiDefaultKeyValueStoreUrl}}/keys"
+        }
+    }
+}

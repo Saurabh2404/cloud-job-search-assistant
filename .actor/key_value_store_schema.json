@@ -1,0 +1,10 @@
+{
+    "actorKeyValueStoreSchemaVersion": 1,
+    "title": "Generated reports and resumes",
+    "collections": {
+        "summary": { "title": "Run summary", "key": "OUTPUT", "contentTypes": ["application/json"] },
+        "report": { "title": "Email report", "key": "REPORT", "contentTypes": ["text/html"] },
+        "jobs": { "title": "Qualified jobs CSV", "key": "QUALIFIED-JOBS", "contentTypes": ["text/csv"] },
+        "resumes": { "title": "Tailored resumes", "keyPrefix": "RESUME-", "contentTypes": ["application/pdf"] }
+    }
+}

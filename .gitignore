@@ -1,0 +1,28 @@
+# This file tells Git which files shouldn't be added to source control
+
+.idea
+.vscode
+.zed
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pdf
+*.csv
+*input*.json
+!.actor/input_schema.json
+!examples/input.example.json
+storage
+apify_storage
+crawlee_storage
+node_modules
+dist
+tsconfig.tsbuildinfo
+coverage
+reports
+screenshots/private
+
+# Added by Apify CLI
+.venv

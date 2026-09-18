@@ -1,0 +1,111 @@
+{
+    "$schema": "https://apify.com/schemas/v1/input.ide.json",
+    "title": "Cloud job-search settings",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "resumeText": {
+            "title": "Source resume text",
+            "type": "string",
+            "description": "The sole factual source for scoring and tailored resumes. Keep the Actor private.",
+            "editor": "textarea"
+        },
+        "targetTitles": {
+            "title": "Target job titles",
+            "type": "array",
+            "description": "Job-title queries combined for each LinkedIn search.",
+            "editor": "stringList",
+            "default": ["Software Engineer", "Backend Engineer", "Full Stack Developer"]
+        },
+        "targetCompanies": {
+            "title": "Preferred companies",
+            "type": "array",
+            "description": "Companies that receive a ranking preference when the role is otherwise suitable.",
+            "editor": "stringList",
+            "default": []
+        },
+        "excludedCompanies": {
+            "title": "Excluded companies",
+            "type": "array",
+            "description": "Listings from these employers are rejected before model scoring.",
+            "editor": "stringList",
+            "default": []
+        },
+        "hybridLocations": {
+            "title": "Hybrid locations",
+            "type": "array",
+            "description": "Locations accepted for hybrid roles.",
+            "editor": "stringList",
+            "default": []
+        },
+        "searchLocation": {
+            "title": "Search location",
+            "type": "string",
+            "description": "Country or region passed to the job-search Actor.",
+            "editor": "textfield",
+            "default": "United States"
+        },
+        "maximumExperienceYears": {
+            "title": "Maximum required experience",
+            "type": "integer",
+            "description": "Reject roles whose explicit minimum experience exceeds this number.",
+            "editor": "number",
+            "minimum": 0,
+            "maximum": 50,
+            "default": 5
+        },
+        "maxResultsPerWorkMode": {
+            "title": "Raw results per work mode",
+            "type": "integer",
+            "description": "Maximum paid LinkedIn results for each of remote and hybrid searches.",
+            "editor": "number",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 10
+        },
+        "maxQualifiedJobs": {
+            "title": "Maximum qualified jobs and resumes",
+            "type": "integer",
+            "description": "Maximum jobs emailed and job-specific PDF resumes created per run.",
+            "editor": "number",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 10
+        },
+        "salaryTarget": {
+            "title": "Salary target",
+            "type": "string",
+            "description": "Compensation preference used for ranking when salary is disclosed.",
+            "editor": "textfield",
+            "default": "Not specified"
+        },
+        "openAiModel": {
+            "title": "OpenAI model",
+            "type": "string",
+            "description": "Model ID used for structured scoring and resume tailoring.",
+            "editor": "textfield",
+            "default": "gpt-5.6-terra"
+        },
+        "stateStoreName": {
+            "title": "Persistent state store name",
+            "type": "string",
+            "description": "Private named key-value store used to remember previously emailed job URLs.",
+            "editor": "textfield",
+            "default": "job-search-state"
+        },
+        "sendEmail": {
+            "title": "Send email",
+            "type": "boolean",
+            "description": "Send the generated digest and attachments using configured SMTP secrets.",
+            "editor": "checkbox",
+            "default": true
+        },
+        "mockJobs": {
+            "title": "Mock jobs for a cost-free test",
+            "type": "array",
+            "description": "Optional developer field that skips the paid LinkedIn child Actor.",
+            "editor": "json"
+        }
+    },
+    "required": ["resumeText"]
+}

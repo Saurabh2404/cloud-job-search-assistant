@@ -1,0 +1,46 @@
+{
+    "name": "cloud-job-search-actor",
+    "version": "0.0.1",
+    "type": "module",
+    "description": "Cloud job discovery, fit validation, tailored resumes, and email delivery.",
+    "engines": {
+        "node": ">=22"
+    },
+    "dependencies": {
+        "apify": "^3.7.0",
+        "archiver": "^8.0.0",
+        "nodemailer": "^10.0.10",
+        "openai": "^7.18.0",
+        "pdfkit": "^0.20.2",
+        "zod": "^4.6.5"
+    },
+    "devDependencies": {
+        "@apify/eslint-config": "^2.0.0",
+        "@apify/tsconfig": "^0.2.0",
+        "@types/archiver": "^8.0.0",
+        "@types/node": "^24.0.0",
+        "@types/nodemailer": "^8.0.2",
+        "@types/pdfkit": "^0.17.6",
+        "eslint": "^9.29.0",
+        "eslint-config-prettier": "^10.1.5",
+        "globals": "^17.0.0",
+        "prettier": "^3.5.3",
+        "tsx": "^4.20.3",
+        "typescript": "^6.0.0",
+        "typescript-eslint": "^8.58.0",
+        "vitest": "^5.0.0"
+    },
+    "scripts": {
+        "start": "npm run start:dev",
+        "start:prod": "node dist/main.js",
+        "start:dev": "tsx src/main.ts",
+        "build": "tsc",
+        "lint": "eslint",
+        "lint:fix": "eslint --fix",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "test": "vitest run"
+    },
+    "author": "",
+    "license": "MIT"
+}

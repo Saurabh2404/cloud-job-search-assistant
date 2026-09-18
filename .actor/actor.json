@@ -1,0 +1,20 @@
+{
+    "$schema": "https://apify.com/schemas/v1/actor.ide.json",
+    "actorSpecification": 1,
+    "name": "cloud-job-search-actor",
+    "title": "Cloud Job Search Assistant",
+    "description": "Finds fresh LinkedIn jobs, validates fit, creates truthful tailored resumes, and emails a human-reviewed application queue.",
+    "version": "0.0",
+    "buildTag": "latest",
+    "meta": {
+        "templateId": "ts-empty",
+        "generatedBy": "Codex with GPT-5"
+    },
+    "inputSchema": "./input_schema.json",
+    "outputSchema": "./output_schema.json",
+    "storages": {
+        "dataset": "./dataset_schema.json",
+        "keyValueStore": "./key_value_store_schema.json"
+    },
+    "dockerfile": "../Dockerfile"
+}

@@ -1,0 +1,58 @@
+{
+    "$schema": "https://apify.com/schemas/v1/dataset.ide.json",
+    "actorSpecification": 1,
+    "fields": {
+        "type": "object",
+        "properties": {
+            "priority": { "type": "integer" },
+            "matchScore": { "type": "integer" },
+            "atsAlignment": { "type": "integer" },
+            "company": { "type": "string" },
+            "title": { "type": "string" },
+            "location": { "type": "string" },
+            "workMode": { "type": "string" },
+            "postedAt": { "type": "string" },
+            "applicants": { "type": "string" },
+            "applyUrl": { "type": "string" },
+            "whyMatch": { "type": "array", "items": { "type": "string" } },
+            "gaps": { "type": "array", "items": { "type": "string" } },
+            "resumeFileName": { "type": "string" }
+        }
+    },
+    "views": {
+        "overview": {
+            "title": "Qualified jobs",
+            "transformation": {
+                "fields": [
+                    "priority",
+                    "matchScore",
+                    "atsAlignment",
+                    "company",
+                    "title",
+                    "location",
+                    "workMode",
+                    "postedAt",
+                    "applicants",
+                    "applyUrl",
+                    "resumeFileName"
+                ]
+            },
+            "display": {
+                "component": "table",
+                "properties": {
+                    "priority": { "label": "#", "format": "number" },
+                    "matchScore": { "label": "Match", "format": "number" },
+                    "atsAlignment": { "label": "ATS", "format": "number" },
+                    "company": { "label": "Company", "format": "text" },
+                    "title": { "label": "Role", "format": "text" },
+                    "location": { "label": "Location", "format": "text" },
+                    "workMode": { "label": "Mode", "format": "text" },
+                    "postedAt": { "label": "Posted", "format": "text" },
+                    "applicants": { "label": "Applicants", "format": "text" },
+                    "applyUrl": { "label": "Apply", "format": "link" },
+                    "resumeFileName": { "label": "Resume", "format": "text" }
+                }
+            }
+        }
+    }
+}

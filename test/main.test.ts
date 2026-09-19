@@ -4,7 +4,7 @@ import { parseInput } from '../src/config.js';
 import { scoreJobsWithoutAi } from '../src/fallback.js';
 import { hardRejectionReason, normalizeJob } from '../src/jobs.js';
 import { createResumePdf } from '../src/pdf.js';
-import { buildApplicationQueueRun } from '../src/queue.js';
+import { applyApplicationSelection, buildApplicationQueueRun } from '../src/queue.js';
 import { buildCsv, buildEmailHtml } from '../src/report.js';
 import type { ScoredJob } from '../src/types.js';
 
@@ -14,6 +14,16 @@ const input = parseInput({
 });
 
 describe('job validation', () => {
+    it('accepts selection input without a resume', () => {
+        expect(
+            parseInput({
+                mode: 'select',
+                runId: '00000000-0000-4000-8000-000000000000',
+                selectedJobNumbers: [1, 3],
+            }),
+        ).toMatchObject({ mode: 'select', selectedJobNumbers: [1, 3] });
+    });
+
     it('normalizes a LinkedIn job', () => {
         const job = normalizeJob({
             company: 'Example',
@@ -132,5 +142,43 @@ describe('artifacts', () => {
         });
         expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
         expect(pdf.length).toBeGreaterThan(1_000);
+    });
+
+    it('marks only selected queue jobs as ready', () => {
+        const jobs = [1, 2, 3].map((priority) => ({
+            id: String(priority),
+            company: `Example ${priority}`,
+            title: 'Java Engineer',
+            url: `https://example.com/jobs/${priority}`,
+            applyUrl: `https://example.com/jobs/${priority}`,
+            companyUrl: '',
+            location: 'India',
+            workMode: 'Remote',
+            salary: 'Not disclosed',
+            postedAt: 'Today',
+            applicants: 'Not available',
+            description: 'Java and Spring Boot',
+            easyApply: false,
+            matchScore: 80,
+            atsAlignment: 80,
+            whyMatch: ['Java'],
+            gaps: [],
+            rejectionReason: '',
+            included: true,
+            priority,
+        })) satisfies ScoredJob[];
+        const queueRun = buildApplicationQueueRun({
+            runId: 'example-run-id',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            generationMode: 'fallback',
+            jobs,
+        });
+
+        const update = applyApplicationSelection(queueRun, [3, 1, 3], '2026-01-02T00:00:00.000Z');
+
+        expect(update.result.selectedJobNumbers).toEqual([1, 3]);
+        expect(update.queueRun.status).toBe('READY');
+        expect(update.queueRun.jobs.map((job) => job.status)).toEqual(['READY', 'WAITING_FOR_USER', 'READY']);
+        expect(() => applyApplicationSelection(queueRun, [4])).toThrow('Job numbers not found');
     });
 });

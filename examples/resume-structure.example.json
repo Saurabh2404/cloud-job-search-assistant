@@ -1,0 +1,52 @@
+{
+    "header": {
+        "name": "Example Candidate",
+        "contactLine": "candidate@example.com | example.com/profile | example.com/code",
+        "headline": "Backend Software Engineer"
+    },
+    "profile": "Software engineer experienced in building reliable backend services and APIs.",
+    "education": [
+        {
+            "institution": "Example University",
+            "degree": "Bachelor of Science in Computer Science",
+            "dates": "2021 - 2025",
+            "location": "Example City",
+            "details": "Relevant detail from the source resume"
+        }
+    ],
+    "skillGroups": [
+        { "category": "Languages", "items": ["Example Language", "SQL"] },
+        { "category": "Technologies", "items": ["Example Framework", "REST APIs"] }
+    ],
+    "experience": [
+        {
+            "company": "Example Company",
+            "title": "Software Engineer",
+            "dates": "2025 - Present",
+            "location": "Example City",
+            "bullets": [
+                "Built a source-supported backend capability using technologies listed in the original resume.",
+                "Improved a source-supported outcome while preserving the original metric exactly."
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "name": "Example Project",
+            "technologies": "Example Technology",
+            "link": "https://example.com/project",
+            "bullets": ["Implemented a source-supported project capability."]
+        }
+    ],
+    "codingProfiles": [{ "platform": "Example Platform", "label": "candidate", "url": "https://example.com/profile" }],
+    "achievements": ["A source-supported achievement."],
+    "targeting": {
+        "targetRole": "Backend Software Engineer",
+        "supportedKeywords": ["REST APIs"],
+        "omittedUnsupportedKeywords": ["Unsupported Example Skill"],
+        "integrityChecks": [
+            "Identity and contact details match the source resume.",
+            "Employment, education, dates, skills, links, and metrics are source-supported."
+        ]
+    }
+}

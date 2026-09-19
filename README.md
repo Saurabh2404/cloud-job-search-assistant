@@ -11,6 +11,7 @@ It does **not** submit applications automatically.
 - Persistent deduplication with an Apify key-value store
 - Configurable titles, employers, locations, experience ceiling, and salary target
 - Structured OpenAI scoring and one-page ATS-readable PDF resumes
+- Evidence-bound resume customization using a generic structured contract
 - Clean links-only email when OpenAI is unavailable or out of credit
 - HTML report, CSV export, dataset output, and private PDF storage
 - Human review before any application activity
@@ -99,7 +100,9 @@ An anonymized input template is available at [examples/input.example.json](examp
 
 ### OpenAI mode
 
-Qualified roles receive structured match analysis. The Actor creates one truthful, job-specific PDF resume per selected role and attaches the PDFs and CSV to the email.
+Qualified roles receive structured match analysis. The Actor creates one truthful, job-specific PDF resume per selected role and attaches the PDFs and CSV to the email. OpenAI must return the generic contract documented in [docs/resume-customization.md](docs/resume-customization.md); unsupported job keywords are recorded as omitted instead of being added to the resume.
+
+Each PDF has a matching private `RESUME-DATA-<runId>-<jobNumber>` JSON record. This keeps verified resume sections available for later human-reviewed form filling without committing personal data to GitHub. A fictional structure example is available at [examples/resume-structure.example.json](examples/resume-structure.example.json).
 
 ### Links-only fallback
 

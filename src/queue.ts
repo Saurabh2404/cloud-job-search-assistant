@@ -32,10 +32,6 @@ export async function saveApplicationQueueRun(args: {
         const resume = args.resumeFiles.get(job.resumeFileName);
         if (resume) await store.setValue(job.resumeKey, resume, { contentType: 'application/pdf' });
     }
-    await store.setValue(`RUN-${args.queueRun.runId}`, args.queueRun, { contentType: 'application/json' });
-    await store.setValue(
-        'LATEST',
-        { runId: args.queueRun.runId, createdAt: args.queueRun.createdAt },
-        { contentType: 'application/json' },
-    );
+    await store.setValue(`RUN-${args.queueRun.runId}`, args.queueRun);
+    await store.setValue('LATEST', { runId: args.queueRun.runId, createdAt: args.queueRun.createdAt });
 }

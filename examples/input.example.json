@@ -10,6 +10,7 @@
     "maxResultsPerWorkMode": 5,
     "maxQualifiedJobs": 5,
     "salaryTarget": "Not specified",
+    "linkedinScraperActorId": "apimaestro/linkedin-jobs-scraper-api",
     "stateStoreName": "job-search-state",
     "applicationQueueStoreName": "job-application-queue",
     "sendEmail": false

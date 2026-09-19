@@ -24,6 +24,10 @@ const searchInputSchema = z.object({
     maxQualifiedJobs: z.number().int().min(1).max(10).default(10),
     salaryTarget: z.string().default('Not specified'),
     openAiModel: z.string().default('gpt-5.6-terra'),
+    linkedinScraperActorId: z
+        .string()
+        .regex(/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/)
+        .default('apimaestro/linkedin-jobs-scraper-api'),
     stateStoreName: z
         .string()
         .regex(/^[a-z0-9-]+$/)

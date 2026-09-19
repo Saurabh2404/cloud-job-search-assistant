@@ -15,6 +15,7 @@ export interface ActorInput {
     maxQualifiedJobs?: number;
     salaryTarget?: string;
     openAiModel?: string;
+    linkedinScraperActorId?: string;
     stateStoreName?: string;
     applicationQueueStoreName?: string;
     sendEmail?: boolean;

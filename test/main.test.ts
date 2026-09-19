@@ -38,6 +38,17 @@ describe('job validation', () => {
         ).toMatchObject({ mode: 'select', selectedJobNumbers: [1, 3] });
     });
 
+    it('accepts a configurable LinkedIn scraper Actor', () => {
+        expect(
+            parseInput({
+                resumeText: 'Backend engineer experienced with APIs, databases, testing, and cloud delivery. '.repeat(
+                    5,
+                ),
+                linkedinScraperActorId: 'example-user/example-linkedin-scraper',
+            }),
+        ).toMatchObject({ linkedinScraperActorId: 'example-user/example-linkedin-scraper' });
+    });
+
     it('normalizes a LinkedIn job', () => {
         const job = normalizeJob({
             company: 'Example',

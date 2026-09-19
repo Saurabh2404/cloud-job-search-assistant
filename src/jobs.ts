@@ -3,8 +3,6 @@ import { Actor, log } from 'apify';
 import type { SearchInput } from './config.js';
 import type { JobCandidate, RawJob, SeenState } from './types.js';
 
-const CHILD_ACTOR = 'apimaestro/linkedin-jobs-scraper-api';
-
 function text(value: unknown, fallback = ''): string {
     return typeof value === 'string' ? value.trim() : fallback;
 }
@@ -60,7 +58,7 @@ export async function fetchJobs(input: SearchInput): Promise<JobCandidate[]> {
     const batches = await Promise.all(
         ['remote', 'hybrid'].map(async (workMode) => {
             log.info(`Starting ${workMode} LinkedIn job search.`, { limit: input.maxResultsPerWorkMode });
-            const run = await Actor.call(CHILD_ACTOR, {
+            const run = await Actor.call(input.linkedinScraperActorId, {
                 keywords,
                 location: input.searchLocation,
                 remote: workMode,

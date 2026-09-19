@@ -1,0 +1,207 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1240" viewBox="0 0 1600 1240" role="img" aria-labelledby="title desc">
+  <title id="title">Human-in-the-loop cloud job search workflow</title>
+  <desc id="desc">Detailed architecture showing scheduled job discovery, Apify processing, OpenAI resume customization, email selection, browser preflight, and human approval boundaries.</desc>
+  <defs>
+    <style>
+      text { font-family: Inter, Arial, sans-serif; letter-spacing: 0; }
+      .title { font-size: 34px; font-weight: 700; fill: #17212b; }
+      .subtitle { font-size: 16px; fill: #52606d; }
+      .lane-title { font-size: 18px; font-weight: 700; fill: #17212b; }
+      .node-title { font-size: 16px; font-weight: 700; fill: #17212b; }
+      .node-text { font-size: 13px; fill: #3e4c59; }
+      .small { font-size: 12px; fill: #52606d; }
+      .badge { font-size: 11px; font-weight: 700; fill: #ffffff; }
+      .arrow { fill: none; stroke: #52606d; stroke-width: 2.2; marker-end: url(#arrow); }
+      .arrow-dashed { fill: none; stroke: #7b8794; stroke-width: 2; stroke-dasharray: 7 6; marker-end: url(#arrow-muted); }
+      .divider { stroke: #d9e2ec; stroke-width: 1; }
+    </style>
+    <marker id="arrow" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#52606d"/>
+    </marker>
+    <marker id="arrow-muted" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">
+      <path d="M0,0 L9,4.5 L0,9 Z" fill="#7b8794"/>
+    </marker>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#17212b" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="1240" fill="#f7f9fb"/>
+  <text x="72" y="62" class="title">Cloud Job Search and Application Preparation</text>
+  <text x="72" y="91" class="subtitle">Codex + Apify + OpenAI + email automation, with explicit human control before application activity</text>
+
+  <!-- Swimlanes -->
+  <rect x="54" y="125" width="1492" height="205" rx="8" fill="#eef6ff" stroke="#9cc5ef"/>
+  <rect x="54" y="345" width="1492" height="410" rx="8" fill="#f2fbf5" stroke="#9bd3ae"/>
+  <rect x="54" y="770" width="1492" height="205" rx="8" fill="#fff8e8" stroke="#e3c66e"/>
+  <rect x="54" y="990" width="1492" height="180" rx="8" fill="#fff1f1" stroke="#e6a2a2"/>
+
+  <rect x="54" y="125" width="185" height="205" rx="8" fill="#dbeeff"/>
+  <rect x="54" y="345" width="185" height="410" rx="8" fill="#daf3e2"/>
+  <rect x="54" y="770" width="185" height="205" rx="8" fill="#f8e8b7"/>
+  <rect x="54" y="990" width="185" height="180" rx="8" fill="#f7d7d7"/>
+
+  <text x="82" y="170" class="lane-title">TRIGGERS</text>
+  <text x="82" y="195" class="small">Apify schedules</text>
+  <text x="82" y="390" class="lane-title">APIFY CLOUD</text>
+  <text x="82" y="415" class="small">Private Actor, tasks,</text>
+  <text x="82" y="434" class="small">storage and browser</text>
+  <text x="82" y="815" class="lane-title">AI + EMAIL</text>
+  <text x="82" y="840" class="small">OpenAI API and</text>
+  <text x="82" y="859" class="small">Gmail SMTP / IMAP</text>
+  <text x="82" y="1035" class="lane-title">HUMAN</text>
+  <text x="82" y="1060" class="small">Review, selection,</text>
+  <text x="82" y="1079" class="small">login and approval</text>
+
+  <!-- Trigger nodes -->
+  <g filter="url(#shadow)">
+    <rect x="285" y="167" width="250" height="118" rx="7" fill="#ffffff" stroke="#4f9de0"/>
+    <rect x="675" y="167" width="250" height="118" rx="7" fill="#ffffff" stroke="#4f9de0"/>
+    <rect x="1065" y="167" width="250" height="118" rx="7" fill="#ffffff" stroke="#4f9de0"/>
+  </g>
+  <rect x="305" y="185" width="62" height="21" rx="3" fill="#2374b9"/>
+  <text x="336" y="200" text-anchor="middle" class="badge">DAILY</text>
+  <text x="305" y="230" class="node-title">10:00 AM job search</text>
+  <text x="305" y="253" class="node-text">Runs the private search task</text>
+  <text x="305" y="272" class="node-text">in Asia/Kolkata timezone</text>
+
+  <rect x="695" y="185" width="83" height="21" rx="3" fill="#2374b9"/>
+  <text x="736" y="200" text-anchor="middle" class="badge">15 MIN</text>
+  <text x="695" y="230" class="node-title">Reply monitor</text>
+  <text x="695" y="253" class="node-text">Checks unread selection replies</text>
+  <text x="695" y="272" class="node-text">without requiring a laptop</text>
+
+  <rect x="1085" y="185" width="74" height="21" rx="3" fill="#2374b9"/>
+  <text x="1122" y="200" text-anchor="middle" class="badge">MANUAL</text>
+  <text x="1085" y="230" class="node-title">Direct Actor actions</text>
+  <text x="1085" y="253" class="node-text">Select or prepare by run ID</text>
+  <text x="1085" y="272" class="node-text">through Console, API or CLI</text>
+
+  <!-- Apify nodes row 1 -->
+  <g filter="url(#shadow)">
+    <rect x="275" y="390" width="240" height="132" rx="7" fill="#ffffff" stroke="#47a868"/>
+    <rect x="555" y="390" width="240" height="132" rx="7" fill="#ffffff" stroke="#47a868"/>
+    <rect x="835" y="390" width="240" height="132" rx="7" fill="#ffffff" stroke="#47a868"/>
+    <rect x="1115" y="390" width="240" height="132" rx="7" fill="#ffffff" stroke="#47a868"/>
+  </g>
+  <text x="295" y="422" class="node-title">1. LinkedIn discovery</text>
+  <text x="295" y="447" class="node-text">Remote and hybrid searches</text>
+  <text x="295" y="466" class="node-text">Recent listings and capped limits</text>
+  <text x="295" y="485" class="node-text">Child scraper Actor output</text>
+  <text x="295" y="504" class="small">No automatic application</text>
+
+  <text x="575" y="422" class="node-title">2. Normalize and filter</text>
+  <text x="575" y="447" class="node-text">Deduplicate previously seen URLs</text>
+  <text x="575" y="466" class="node-text">Reject hard experience mismatch</text>
+  <text x="575" y="485" class="node-text">Reject unsuitable work modes</text>
+  <text x="575" y="504" class="small">Scraped text remains untrusted</text>
+
+  <text x="855" y="422" class="node-title">3. Rank top matches</text>
+  <text x="855" y="447" class="node-text">Role, skills, domain and logistics</text>
+  <text x="855" y="466" class="node-text">Maximum ten qualified jobs</text>
+  <text x="855" y="485" class="node-text">Transparent reasons and gaps</text>
+  <text x="855" y="504" class="small">Fallback works without AI credit</text>
+
+  <text x="1135" y="422" class="node-title">4. Create private queue</text>
+  <text x="1135" y="447" class="node-text">Unique report run ID</text>
+  <text x="1135" y="466" class="node-text">WAITING_FOR_USER status</text>
+  <text x="1135" y="485" class="node-text">Ranked jobs and artifact keys</text>
+  <text x="1135" y="504" class="small">Private key-value storage</text>
+
+  <!-- Apify nodes row 2 -->
+  <g filter="url(#shadow)">
+    <rect x="315" y="585" width="280" height="125" rx="7" fill="#ffffff" stroke="#47a868"/>
+    <rect x="660" y="585" width="280" height="125" rx="7" fill="#ffffff" stroke="#47a868"/>
+    <rect x="1005" y="585" width="300" height="125" rx="7" fill="#ffffff" stroke="#47a868"/>
+  </g>
+  <text x="335" y="616" class="node-title">7. Validate selection</text>
+  <text x="335" y="641" class="node-text">Match sender, run ID and job numbers</text>
+  <text x="335" y="660" class="node-text">Remove duplicates; reject invalid jobs</text>
+  <text x="335" y="679" class="node-text">Set selected jobs to READY</text>
+  <text x="335" y="698" class="small">Idempotent and retryable</text>
+
+  <text x="680" y="616" class="node-title">8. Browser preflight</text>
+  <text x="680" y="641" class="node-text">Open each HTTPS application page</text>
+  <text x="680" y="660" class="node-text">Inventory fields, buttons and final URL</text>
+  <text x="680" y="679" class="node-text">Save a private screenshot</text>
+  <text x="680" y="698" class="small">Private/local network URLs blocked</text>
+
+  <text x="1025" y="616" class="node-title">9. Classify next action</text>
+  <text x="1025" y="641" class="node-text">PREPARED or USER_ACTION_REQUIRED</text>
+  <text x="1025" y="660" class="node-text">Detect login, CAPTCHA, OTP, tests</text>
+  <text x="1025" y="679" class="node-text">Record failure without submission</text>
+  <text x="1025" y="698" class="small">No credentials or cookies retained</text>
+
+  <!-- AI and email nodes -->
+  <g filter="url(#shadow)">
+    <rect x="275" y="810" width="285" height="125" rx="7" fill="#ffffff" stroke="#c79b21"/>
+    <rect x="620" y="810" width="285" height="125" rx="7" fill="#ffffff" stroke="#c79b21"/>
+    <rect x="965" y="810" width="340" height="125" rx="7" fill="#ffffff" stroke="#c79b21"/>
+  </g>
+  <text x="295" y="841" class="node-title">OpenAI available</text>
+  <text x="295" y="866" class="node-text">Evidence-bound job scoring</text>
+  <text x="295" y="885" class="node-text">Structured resume customization</text>
+  <text x="295" y="904" class="node-text">One-page PDF plus private JSON</text>
+  <text x="295" y="923" class="small">Never invent unsupported facts</text>
+
+  <text x="640" y="841" class="node-title">OpenAI unavailable</text>
+  <text x="640" y="866" class="node-text">Deterministic keyword fallback</text>
+  <text x="640" y="885" class="node-text">Clean links-only report</text>
+  <text x="640" y="904" class="node-text">No resume attachment or CSV</text>
+  <text x="640" y="923" class="small">Search automation continues</text>
+
+  <text x="985" y="841" class="node-title">5. Email delivery and reply intake</text>
+  <text x="985" y="866" class="node-text">SMTP sends ranked jobs and run ID</text>
+  <text x="985" y="885" class="node-text">IMAP reads explicit apply/prepare replies</text>
+  <text x="985" y="904" class="node-text">Confirmation includes links and blockers</text>
+  <text x="985" y="923" class="small">Only the configured sender is accepted</text>
+
+  <!-- Human nodes -->
+  <g filter="url(#shadow)">
+    <rect x="285" y="1025" width="290" height="105" rx="7" fill="#ffffff" stroke="#d46868"/>
+    <rect x="650" y="1025" width="290" height="105" rx="7" fill="#ffffff" stroke="#d46868"/>
+    <rect x="1015" y="1025" width="320" height="105" rx="7" fill="#ffffff" stroke="#d46868"/>
+  </g>
+  <text x="305" y="1057" class="node-title">6. Review and select</text>
+  <text x="305" y="1082" class="node-text">Inspect jobs and tailored resumes</text>
+  <text x="305" y="1101" class="node-text">Reply: Apply jobs 1, 3, and 6</text>
+  <text x="305" y="1120" class="small">Human chooses every target</text>
+
+  <text x="670" y="1057" class="node-title">10. Complete blocked steps</text>
+  <text x="670" y="1082" class="node-text">Login, OTP, CAPTCHA and assessments</text>
+  <text x="670" y="1101" class="node-text">Answer legal and personal questions</text>
+  <text x="670" y="1120" class="small">Never delegated to automation</text>
+
+  <text x="1035" y="1057" class="node-title">11. Final review and submission</text>
+  <text x="1035" y="1082" class="node-text">Verify every field and uploaded resume</text>
+  <text x="1035" y="1101" class="node-text">Approve submission and record outcome</text>
+  <text x="1035" y="1120" class="small">Not implemented: automatic submission</text>
+
+  <!-- Arrows: scheduled discovery -->
+  <path class="arrow" d="M410 285 L410 390"/>
+  <path class="arrow" d="M515 456 L555 456"/>
+  <path class="arrow" d="M795 456 L835 456"/>
+  <path class="arrow" d="M1075 456 L1115 456"/>
+  <path class="arrow" d="M955 522 L955 770 L418 770 L418 810"/>
+  <path class="arrow" d="M955 522 L955 765 L762 765 L762 810"/>
+  <path class="arrow" d="M1135 810 L1135 522"/>
+  <path class="arrow" d="M1135 935 L1135 970 L430 970 L430 1025"/>
+
+  <!-- Reply and preparation loop -->
+  <path class="arrow" d="M800 285 L800 345 L455 345 L455 585"/>
+  <path class="arrow-dashed" d="M575 1078 L620 1078 L620 948 L1095 948 L1095 935"/>
+  <path class="arrow" d="M595 648 L660 648"/>
+  <path class="arrow" d="M940 648 L1005 648"/>
+  <path class="arrow" d="M1160 710 L1160 990 L795 990 L795 1025"/>
+  <path class="arrow-dashed" d="M940 1078 L1015 1078"/>
+  <path class="arrow" d="M1190 285 L1190 345 L455 345 L455 585"/>
+
+  <!-- Security footer -->
+  <line x1="72" y1="1192" x2="1528" y2="1192" class="divider"/>
+  <rect x="72" y="1207" width="88" height="21" rx="3" fill="#2e7d4f"/>
+  <text x="116" y="1222" text-anchor="middle" class="badge">PRIVATE</text>
+  <text x="174" y="1222" class="small">Secrets, source resume, generated PDFs, structured resume JSON, queues and screenshots remain in private Apify resources.</text>
+  <rect x="1120" y="1207" width="92" height="21" rx="3" fill="#b34c4c"/>
+  <text x="1166" y="1222" text-anchor="middle" class="badge">BOUNDARY</text>
+  <text x="1226" y="1222" class="small">No CAPTCHA bypass or final submission.</text>
+</svg>

@@ -22,6 +22,8 @@ It does **not** submit applications automatically.
 
 ## Architecture
 
+![Complete human-in-the-loop workflow](docs/complete-workflow.svg)
+
 ```mermaid
 flowchart LR
     S[Apify schedule] --> A[Job Search Actor]

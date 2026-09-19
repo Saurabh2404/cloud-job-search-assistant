@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { parseInput } from '../src/config.js';
 import { scoreJobsWithoutAi } from '../src/fallback.js';
 import { hardRejectionReason, normalizeJob } from '../src/jobs.js';
+import { parseSelectionCommand } from '../src/mailbox.js';
 import { createResumePdf } from '../src/pdf.js';
 import { applyApplicationSelection, buildApplicationQueueRun } from '../src/queue.js';
 import { buildCsv, buildEmailHtml } from '../src/report.js';
@@ -14,6 +15,18 @@ const input = parseInput({
 });
 
 describe('job validation', () => {
+    it('parses an explicit email reply command', () => {
+        expect(
+            parseSelectionCommand(
+                'Re: Daily shortlist\nApply jobs 6, 1, and 3\nRun: 123e4567-e89b-42d3-a456-426614174000',
+            ),
+        ).toEqual({
+            runId: '123e4567-e89b-42d3-a456-426614174000',
+            jobNumbers: [1, 3, 6],
+        });
+        expect(parseSelectionCommand('Run: 123e4567-e89b-42d3-a456-426614174000')).toBeNull();
+    });
+
     it('accepts selection input without a resume', () => {
         expect(
             parseInput({

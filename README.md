@@ -14,6 +14,7 @@ It does **not** submit applications automatically.
 - Clean links-only email when OpenAI is unavailable or out of credit
 - HTML report, CSV export, dataset output, and private PDF storage
 - Human review before any application activity
+- Persistent application queue with unique report IDs and review statuses
 
 ## Architecture
 
@@ -102,6 +103,12 @@ If OpenAI is missing, unavailable, or out of credit, the workflow still sends a 
 - application link
 
 No resume or CSV attachment is sent in fallback mode.
+
+## Application queue
+
+Every report receives a unique run ID. Qualified jobs are copied to a private named key-value store with the initial status `WAITING_FOR_USER`. When OpenAI mode creates a resume, the matching PDF is stored under a run-specific private key.
+
+This queue is the foundation for later selection and browser-assistance stages. It does not monitor email, open application pages, or submit forms yet.
 
 ## Scheduling
 

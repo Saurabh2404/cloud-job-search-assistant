@@ -76,6 +76,7 @@ export type ApplicationStatus =
 export interface ApplicationQueueJob extends ScoredJob {
     status: ApplicationStatus;
     resumeKey?: string;
+    resumeDataKey?: string;
     selectedAt?: string;
     approvedAt?: string;
     submittedAt?: string;

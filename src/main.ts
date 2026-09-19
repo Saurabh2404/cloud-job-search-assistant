@@ -12,7 +12,7 @@ import { createResumePdf } from './pdf.js';
 import { prepareSelectedApplications } from './prepare.js';
 import { buildApplicationQueueRun, saveApplicationQueueRun, selectApplicationJobs } from './queue.js';
 import { buildCsv, buildEmailHtml } from './report.js';
-import type { ActorInput, ScoredJob } from './types.js';
+import type { ActorInput, ResumeContent, ScoredJob } from './types.js';
 
 function safeFilePart(value: string): string {
     return (
@@ -108,6 +108,7 @@ async function runActor(): Promise<void> {
         .slice(0, input.maxQualifiedJobs);
 
     const attachments: EmailAttachment[] = [];
+    const structuredResumes = new Map<number, ResumeContent>();
     for (const [index, job] of qualified.entries()) {
         job.priority = index + 1;
         if (generationMode === 'fallback') continue;
@@ -125,9 +126,11 @@ async function runActor(): Promise<void> {
             break;
         }
         const pdf = await createResumePdf(resume);
-        job.resumeFileName = `${String(index + 1).padStart(2, '0')}_${safeFilePart(job.company)}_${safeFilePart(job.title)}_${safeFilePart(resume.name)}_Resume.pdf`;
+        structuredResumes.set(index + 1, resume);
+        job.resumeFileName = `${String(index + 1).padStart(2, '0')}_${safeFilePart(job.company)}_${safeFilePart(job.title)}_${safeFilePart(resume.header.name)}_Resume.pdf`;
         attachments.push({ filename: job.resumeFileName, content: pdf, contentType: 'application/pdf' });
         await Actor.setValue(`RESUME-${String(index + 1).padStart(2, '0')}`, pdf, { contentType: 'application/pdf' });
+        await Actor.setValue(`RESUME-DATA-${String(index + 1).padStart(2, '0')}`, resume);
     }
 
     const csv = buildCsv(qualified);
@@ -144,6 +147,7 @@ async function runActor(): Promise<void> {
         storeName: input.applicationQueueStoreName,
         queueRun,
         resumeFiles,
+        resumeData: structuredResumes,
     });
     const html = buildEmailHtml({
         rawCount: rawJobs.length,

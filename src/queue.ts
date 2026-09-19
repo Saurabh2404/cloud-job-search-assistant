@@ -1,6 +1,6 @@
 import { Actor } from 'apify';
 
-import type { ApplicationQueueRun, ApplicationSelectionResult, ScoredJob } from './types.js';
+import type { ApplicationQueueRun, ApplicationSelectionResult, ResumeContent, ScoredJob } from './types.js';
 
 export function buildApplicationQueueRun(args: {
     runId: string;
@@ -17,6 +17,7 @@ export function buildApplicationQueueRun(args: {
             ...job,
             status: 'WAITING_FOR_USER',
             resumeKey: job.resumeFileName ? `RESUME-${args.runId}-${job.priority}` : undefined,
+            resumeDataKey: job.resumeFileName ? `RESUME-DATA-${args.runId}-${job.priority}` : undefined,
         })),
     };
 }
@@ -25,12 +26,15 @@ export async function saveApplicationQueueRun(args: {
     storeName: string;
     queueRun: ApplicationQueueRun;
     resumeFiles: Map<string, Buffer>;
+    resumeData: Map<number, ResumeContent>;
 }): Promise<void> {
     const store = await Actor.openKeyValueStore(args.storeName);
     for (const job of args.queueRun.jobs) {
         if (!job.resumeKey || !job.resumeFileName) continue;
         const resume = args.resumeFiles.get(job.resumeFileName);
         if (resume) await store.setValue(job.resumeKey, resume, { contentType: 'application/pdf' });
+        const structuredResume = job.priority === undefined ? undefined : args.resumeData.get(job.priority);
+        if (job.resumeDataKey && structuredResume) await store.setValue(job.resumeDataKey, structuredResume);
     }
     await store.setValue(`RUN-${args.queueRun.runId}`, args.queueRun);
     await store.setValue('LATEST', { runId: args.queueRun.runId, createdAt: args.queueRun.createdAt });

@@ -4,6 +4,7 @@ import { parseInput } from '../src/config.js';
 import { scoreJobsWithoutAi } from '../src/fallback.js';
 import { hardRejectionReason, normalizeJob } from '../src/jobs.js';
 import { createResumePdf } from '../src/pdf.js';
+import { buildApplicationQueueRun } from '../src/queue.js';
 import { buildCsv, buildEmailHtml } from '../src/report.js';
 import type { ScoredJob } from '../src/types.js';
 
@@ -82,11 +83,24 @@ describe('artifacts', () => {
             rawCount: 1,
             duplicateCount: 0,
             rejectedCount: 0,
+            runId: 'example-run-id',
             generationMode: 'fallback',
         });
         expect(fallbackEmail).toContain('<strong>CTC:</strong> Not disclosed');
         expect(fallbackEmail).toContain('No customized resumes are attached');
         expect(fallbackEmail).not.toContain('Resume:');
+        expect(fallbackEmail).toContain('example-run-id');
+
+        const queueRun = buildApplicationQueueRun({
+            runId: 'example-run-id',
+            createdAt: '2026-01-01T00:00:00.000Z',
+            generationMode: 'openai',
+            jobs: [job],
+        });
+        expect(queueRun.jobs[0]).toMatchObject({
+            status: 'WAITING_FOR_USER',
+            resumeKey: 'RESUME-example-run-id-1',
+        });
     });
 
     it('creates a one-page PDF', async () => {

@@ -93,6 +93,13 @@
             "editor": "textfield",
             "default": "job-search-state"
         },
+        "applicationQueueStoreName": {
+            "title": "Application queue store name",
+            "type": "string",
+            "description": "Private named key-value store containing review queues and matching resumes.",
+            "editor": "textfield",
+            "default": "job-application-queue"
+        },
         "sendEmail": {
             "title": "Send email",
             "type": "boolean",

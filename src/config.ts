@@ -22,6 +22,10 @@ export const inputSchema = z.object({
         .string()
         .regex(/^[a-z0-9-]+$/)
         .default('job-search-state'),
+    applicationQueueStoreName: z
+        .string()
+        .regex(/^[a-z0-9-]+$/)
+        .default('job-application-queue'),
     sendEmail: z.boolean().default(true),
     mockJobs: z.array(z.record(z.string(), z.unknown())).optional(),
 });

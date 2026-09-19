@@ -10,5 +10,6 @@
     "maxQualifiedJobs": 5,
     "salaryTarget": "Not specified",
     "stateStoreName": "job-search-state",
+    "applicationQueueStoreName": "job-application-queue",
     "sendEmail": false
 }

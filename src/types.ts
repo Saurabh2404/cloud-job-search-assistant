@@ -11,6 +11,7 @@ export interface ActorInput {
     salaryTarget?: string;
     openAiModel?: string;
     stateStoreName?: string;
+    applicationQueueStoreName?: string;
     sendEmail?: boolean;
     mockJobs?: RawJob[];
 }
@@ -87,4 +88,23 @@ export interface ResumeContent {
 
 export interface SeenState {
     urls: Record<string, string>;
+}
+
+export type ApplicationStatus = 'WAITING_FOR_USER' | 'READY' | 'APPROVED' | 'SUBMITTED' | 'FAILED';
+
+export interface ApplicationQueueJob extends ScoredJob {
+    status: ApplicationStatus;
+    resumeKey?: string;
+    selectedAt?: string;
+    approvedAt?: string;
+    submittedAt?: string;
+    failureReason?: string;
+}
+
+export interface ApplicationQueueRun {
+    runId: string;
+    createdAt: string;
+    generationMode: 'openai' | 'fallback';
+    status: 'WAITING_FOR_USER';
+    jobs: ApplicationQueueJob[];
 }

@@ -1,0 +1,18 @@
+{
+    "mode": "search",
+    "resumeText": "PASTE THE COMPLETE SOURCE RESUME TEXT IN THE PRIVATE APIFY TASK",
+    "targetTitles": ["Software Engineer", "Backend Engineer", "Full Stack Developer"],
+    "targetCompanies": [],
+    "excludedCompanies": [],
+    "hybridLocations": ["Preferred City"],
+    "searchLocation": "Preferred Country or Region",
+    "maximumExperienceYears": 5,
+    "maxResultsPerWorkMode": 5,
+    "maxQualifiedJobs": 10,
+    "salaryTarget": "Not specified",
+    "openAiModel": "gpt-5.6-terra",
+    "linkedinScraperActorId": "apimaestro/linkedin-jobs-scraper-api",
+    "stateStoreName": "job-search-state",
+    "applicationQueueStoreName": "job-application-queue",
+    "sendEmail": true
+}

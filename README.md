@@ -4,6 +4,8 @@ A private, human-in-the-loop job discovery workflow built with TypeScript and Ap
 
 It does **not** submit applications automatically.
 
+For a fresh deployment, follow the [complete cloud setup guide](docs/SETUP.md). It includes private Actor deployment, secrets, scraper compatibility, Task inputs, schedules, testing, and production checks.
+
 ## Features
 
 - Scheduled cloud execution; no always-on laptop required
@@ -90,13 +92,14 @@ apify push
 In Apify Console:
 
 1. Keep the Actor private.
-2. Open **Source > Environment variables**.
-3. Add the four variables listed above and mark credentials as secret.
+2. Open the Actor's environment-variable settings.
+3. Add the required variables listed above and mark credentials as secret.
 4. Open the Input tab and paste your resume text.
 5. Customize search location, titles, employers, experience ceiling, and limits.
 6. Run a small test before enabling a schedule.
 
 An anonymized input template is available at [examples/input.example.json](examples/input.example.json).
+Copy-ready private Task templates are available for [search](examples/search-task.example.json) and [reply monitoring](examples/monitor-task.example.json).
 
 ## Output modes
 
@@ -180,6 +183,8 @@ apify push
 ```
 
 Create a private Apify Task in `search` mode for scheduled discovery and a separate recurring Task in `monitor` mode for replies. Submit `select` or `prepare` as separate Actor runs so the scheduled search task's resume and settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
+
+The LinkedIn scraper is selected through `linkedinScraperActorId`, so another compatible scraper can be used without editing source code. See the [setup guide](docs/SETUP.md#4-choose-a-linkedin-scraper) for its required input and output contract.
 
 ## Scheduling
 

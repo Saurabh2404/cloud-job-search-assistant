@@ -1,0 +1,6 @@
+{
+    "mode": "monitor",
+    "applicationQueueStoreName": "job-application-queue",
+    "maximumReplyMessages": 20,
+    "prepareApplicationForms": true
+}

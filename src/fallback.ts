@@ -13,7 +13,6 @@ const supportedSkills = [
     'Kubernetes',
     'Eureka Server',
     'WebLogic Server',
-    'Flexcube',
     'NodeJS',
     'ExpressJS',
     'JavaScript',

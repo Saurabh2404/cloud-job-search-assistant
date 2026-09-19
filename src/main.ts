@@ -1,3 +1,5 @@
+import { randomUUID } from 'node:crypto';
+
 import { Actor, log } from 'apify';
 
 import { scoreJobs, tailorResume } from './ai.js';
@@ -6,6 +8,7 @@ import { type EmailAttachment, sendDigest } from './email.js';
 import { scoreJobsWithoutAi } from './fallback.js';
 import { fetchJobs, hardRejectionReason, removeSeenJobs, saveSeenJobs } from './jobs.js';
 import { createResumePdf } from './pdf.js';
+import { buildApplicationQueueRun, saveApplicationQueueRun } from './queue.js';
 import { buildCsv, buildEmailHtml } from './report.js';
 import type { ActorInput, ScoredJob } from './types.js';
 
@@ -22,6 +25,8 @@ await Actor.init();
 
 try {
     const input = parseInput(await Actor.getInput<ActorInput>());
+    const runId = randomUUID();
+    const generatedAt = new Date().toISOString();
     const rawJobs = await fetchJobs(input);
     const { fresh, state } = await removeSeenJobs(rawJobs, input.stateStoreName);
     const duplicateCount = rawJobs.length - fresh.length;
@@ -89,11 +94,25 @@ try {
 
     const csv = buildCsv(qualified);
     const rejected = [...preRejected, ...scored.filter((job) => !qualified.some((item) => item.url === job.url))];
+    const queueRun = buildApplicationQueueRun({ runId, createdAt: generatedAt, generationMode, jobs: qualified });
+    const resumeFiles = new Map(
+        attachments
+            .filter((attachment): attachment is EmailAttachment & { content: Buffer } =>
+                Buffer.isBuffer(attachment.content),
+            )
+            .map((attachment) => [attachment.filename, attachment.content]),
+    );
+    await saveApplicationQueueRun({
+        storeName: input.applicationQueueStoreName,
+        queueRun,
+        resumeFiles,
+    });
     const html = buildEmailHtml({
         rawCount: rawJobs.length,
         duplicateCount,
         qualified,
         rejectedCount: rejected.length,
+        runId,
         generationMode,
     });
     const emailAttachments =
@@ -107,7 +126,7 @@ try {
     if (input.sendEmail) {
         const modeLabel = generationMode === 'fallback' ? ' [links only]' : '';
         const messageId = await sendDigest(
-            `Daily job shortlist: ${qualified.length} qualified matches${modeLabel}`,
+            `Daily job shortlist: ${qualified.length} qualified matches${modeLabel} [run ${runId}]`,
             html,
             emailAttachments,
         );
@@ -117,7 +136,8 @@ try {
     for (const job of qualified) await Actor.pushData(job);
     await saveSeenJobs(input.stateStoreName, state, qualified);
     await Actor.setValue('OUTPUT', {
-        generatedAt: new Date().toISOString(),
+        runId,
+        generatedAt,
         rawCount: rawJobs.length,
         duplicateCount,
         candidateCount: candidates.length,
@@ -133,6 +153,7 @@ try {
         qualified: qualified.length,
         rejected: rejected.length,
         emailSent: input.sendEmail,
+        runId,
     });
 } catch (error) {
     log.exception(error as Error, 'Cloud job-search run failed.');

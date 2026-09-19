@@ -58,6 +58,7 @@ export function buildEmailHtml(args: {
     rawCount: number;
     duplicateCount: number;
     rejectedCount: number;
+    runId: string;
     generationMode?: 'openai' | 'fallback';
 }): string {
     const shortDescription = (value: string): string => {
@@ -98,9 +99,10 @@ export function buildEmailHtml(args: {
     return `<!doctype html><html><body style="margin:0;background:#f4f6f8;color:#17202a;font-family:Arial,sans-serif">
       <main style="max-width:760px;margin:0 auto;padding:24px 12px"><section style="background:#fff;border:1px solid #dfe3e8;padding:24px">
         <h1 style="margin:0 0 8px">Your daily job shortlist</h1>
+        <p style="margin:0 0 8px"><strong>Run ID:</strong> <code>${escapeHtml(args.runId)}</code></p>
         <p style="color:#52606d">${args.generationMode === 'fallback' ? 'OpenAI was unavailable, so this report contains a clean links-only shortlist. No customized resumes are attached.' : 'Prepared by Apify + OpenAI. Human review is required before applying.'}</p>
         <div style="margin:20px 0;padding:14px;background:#eef6f2;border-left:4px solid #16835d"><strong>Run summary</strong><br>${args.rawCount} collected · ${args.duplicateCount} duplicates removed · ${args.qualified.length} qualified · ${args.rejectedCount} rejected</div>
         ${cards || '<p>No suitable fresh matches passed validation today.</p>'}
-        <p style="margin-top:24px;padding-top:16px;border-top:1px solid #dfe3e8"><strong>To continue:</strong> return to Codex and say, for example, “Apply to jobs 1, 3, and 6.” No application has been submitted automatically.</p>
+        <p style="margin-top:24px;padding-top:16px;border-top:1px solid #dfe3e8"><strong>To continue:</strong> return to Codex and say, for example, “For run ${escapeHtml(args.runId)}, prepare jobs 1, 3, and 6.” No application has been submitted automatically.</p>
       </section></main></body></html>`;
 }

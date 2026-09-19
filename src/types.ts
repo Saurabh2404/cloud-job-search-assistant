@@ -64,32 +64,7 @@ export interface ScoredJob extends JobCandidate {
     resumeFileName?: string;
 }
 
-export interface ResumeContent {
-    name: string;
-    contactLine: string;
-    headline: string;
-    summary: string;
-    skills: string[];
-    experience: {
-        company: string;
-        title: string;
-        dates: string;
-        location: string;
-        bullets: string[];
-    }[];
-    education: {
-        institution: string;
-        degree: string;
-        dates: string;
-        details: string;
-    }[];
-    projects: {
-        name: string;
-        technologies: string;
-        bullets: string[];
-    }[];
-    achievements: string[];
-}
+export type { ResumeContent } from './resume.js';
 
 export interface SeenState {
     urls: Record<string, string>;

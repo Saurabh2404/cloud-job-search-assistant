@@ -8,7 +8,7 @@ import { type EmailAttachment, sendDigest } from './email.js';
 import { scoreJobsWithoutAi } from './fallback.js';
 import { fetchJobs, hardRejectionReason, removeSeenJobs, saveSeenJobs } from './jobs.js';
 import { createResumePdf } from './pdf.js';
-import { buildApplicationQueueRun, saveApplicationQueueRun } from './queue.js';
+import { buildApplicationQueueRun, saveApplicationQueueRun, selectApplicationJobs } from './queue.js';
 import { buildCsv, buildEmailHtml } from './report.js';
 import type { ActorInput, ScoredJob } from './types.js';
 
@@ -23,8 +23,22 @@ function safeFilePart(value: string): string {
 
 await Actor.init();
 
-try {
+async function runActor(): Promise<void> {
     const input = parseInput(await Actor.getInput<ActorInput>());
+    if (input.mode === 'select') {
+        const selection = await selectApplicationJobs({
+            storeName: input.applicationQueueStoreName,
+            runId: input.runId,
+            selectedJobNumbers: input.selectedJobNumbers,
+        });
+        await Actor.setValue('OUTPUT', { mode: 'select', ...selection });
+        log.info('Application choices saved for human review.', {
+            runId: selection.runId,
+            selectedJobNumbers: selection.selectedJobNumbers,
+        });
+        return;
+    }
+
     const runId = randomUUID();
     const generatedAt = new Date().toISOString();
     const rawJobs = await fetchJobs(input);
@@ -155,6 +169,10 @@ try {
         emailSent: input.sendEmail,
         runId,
     });
+}
+
+try {
+    await runActor();
 } catch (error) {
     log.exception(error as Error, 'Cloud job-search run failed.');
     await Actor.fail({ statusMessage: 'Cloud job-search run failed. Check the run log for details.' });

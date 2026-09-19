@@ -1,5 +1,8 @@
 export interface ActorInput {
-    resumeText: string;
+    mode?: 'search' | 'select';
+    resumeText?: string;
+    runId?: string;
+    selectedJobNumbers?: number[];
     targetTitles?: string[];
     targetCompanies?: string[];
     excludedCompanies?: string[];
@@ -105,6 +108,20 @@ export interface ApplicationQueueRun {
     runId: string;
     createdAt: string;
     generationMode: 'openai' | 'fallback';
-    status: 'WAITING_FOR_USER';
+    status: 'WAITING_FOR_USER' | 'READY';
     jobs: ApplicationQueueJob[];
+}
+
+export interface ApplicationSelectionResult {
+    runId: string;
+    selectedAt: string;
+    selectedJobNumbers: number[];
+    selectedJobs: {
+        priority: number;
+        company: string;
+        title: string;
+        url: string;
+        status: 'READY';
+        resumeAvailable: boolean;
+    }[];
 }

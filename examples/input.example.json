@@ -1,4 +1,5 @@
 {
+    "mode": "search",
     "resumeText": "Example Candidate | candidate@example.com | linkedin.com/in/example-candidate. Software engineer experienced in TypeScript, Node.js, REST APIs, PostgreSQL, automated testing, Docker, and cloud deployments. Built production services, collaborated with product teams, reviewed code, and improved service reliability. Bachelor of Science in Computer Science from Example University.",
     "targetTitles": ["Software Engineer", "Backend Engineer"],
     "targetCompanies": [],

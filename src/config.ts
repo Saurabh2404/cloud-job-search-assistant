@@ -6,7 +6,13 @@ export const DEFAULT_TITLES = ['Software Engineer', 'Backend Engineer', 'Full St
 
 export const DEFAULT_COMPANIES: string[] = [];
 
-export const inputSchema = z.object({
+const storeNameSchema = z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .default('job-application-queue');
+
+const searchInputSchema = z.object({
+    mode: z.literal('search'),
     resumeText: z.string().min(200),
     targetTitles: z.array(z.string().min(2)).default(DEFAULT_TITLES),
     targetCompanies: z.array(z.string().min(2)).default(DEFAULT_COMPANIES),
@@ -22,15 +28,29 @@ export const inputSchema = z.object({
         .string()
         .regex(/^[a-z0-9-]+$/)
         .default('job-search-state'),
-    applicationQueueStoreName: z
-        .string()
-        .regex(/^[a-z0-9-]+$/)
-        .default('job-application-queue'),
+    applicationQueueStoreName: storeNameSchema,
     sendEmail: z.boolean().default(true),
     mockJobs: z.array(z.record(z.string(), z.unknown())).optional(),
 });
 
+const selectionInputSchema = z.object({
+    mode: z.literal('select'),
+    runId: z.string().uuid(),
+    selectedJobNumbers: z.array(z.number().int().min(1).max(10)).min(1).max(10),
+    applicationQueueStoreName: storeNameSchema,
+});
+
+export const inputSchema = z.preprocess(
+    (value) => {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
+        const record = value as Record<string, unknown>;
+        return { ...record, mode: record.mode ?? 'search' };
+    },
+    z.discriminatedUnion('mode', [searchInputSchema, selectionInputSchema]),
+);
+
 export type ParsedInput = z.infer<typeof inputSchema>;
+export type SearchInput = Extract<ParsedInput, { mode: 'search' }>;
 
 export function parseInput(value: ActorInput | null): ParsedInput {
     return inputSchema.parse(value ?? {});

@@ -1,6 +1,6 @@
 import { Actor, log } from 'apify';
 
-import type { ParsedInput } from './config.js';
+import type { SearchInput } from './config.js';
 import type { JobCandidate, RawJob, SeenState } from './types.js';
 
 const CHILD_ACTOR = 'apimaestro/linkedin-jobs-scraper-api';
@@ -32,7 +32,7 @@ export function normalizeJob(raw: RawJob): JobCandidate | null {
     };
 }
 
-export function hardRejectionReason(job: JobCandidate, input: ParsedInput): string {
+export function hardRejectionReason(job: JobCandidate, input: SearchInput): string {
     const combined = `${job.title}\n${job.company}\n${job.location}\n${job.workMode}\n${job.description}`.toLowerCase();
     if (input.excludedCompanies.some((company) => job.company.toLowerCase().includes(company.toLowerCase()))) {
         return 'Current or excluded employer';
@@ -48,7 +48,7 @@ export function hardRejectionReason(job: JobCandidate, input: ParsedInput): stri
     return '';
 }
 
-export async function fetchJobs(input: ParsedInput): Promise<JobCandidate[]> {
+export async function fetchJobs(input: SearchInput): Promise<JobCandidate[]> {
     if (input.mockJobs?.length) {
         log.info('Using mock jobs; no child Actor will be charged.');
         return input.mockJobs

@@ -4,6 +4,15 @@
     "type": "object",
     "schemaVersion": 1,
     "properties": {
+        "mode": {
+            "title": "Workflow action",
+            "type": "string",
+            "description": "Search for jobs or save job numbers selected from an existing report.",
+            "editor": "select",
+            "enum": ["search", "select"],
+            "enumTitles": ["Search and email jobs", "Select jobs from a report"],
+            "default": "search"
+        },
         "resumeText": {
             "title": "Source resume text",
             "type": "string",
@@ -100,6 +109,18 @@
             "editor": "textfield",
             "default": "job-application-queue"
         },
+        "runId": {
+            "title": "Report run ID",
+            "type": "string",
+            "description": "Unique run ID shown in the email. Required only when selecting jobs.",
+            "editor": "textfield"
+        },
+        "selectedJobNumbers": {
+            "title": "Selected job numbers",
+            "type": "array",
+            "description": "Job numbers from the report to prepare for the next approval stage.",
+            "editor": "json"
+        },
         "sendEmail": {
             "title": "Send email",
             "type": "boolean",
@@ -114,5 +135,5 @@
             "editor": "json"
         }
     },
-    "required": ["resumeText"]
+    "required": []
 }

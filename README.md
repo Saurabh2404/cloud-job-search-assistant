@@ -15,6 +15,7 @@ It does **not** submit applications automatically.
 - HTML report, CSV export, dataset output, and private PDF storage
 - Human review before any application activity
 - Persistent application queue with unique report IDs and review statuses
+- Validated selection intake using a report run ID and job numbers
 
 ## Architecture
 
@@ -108,7 +109,34 @@ No resume or CSV attachment is sent in fallback mode.
 
 Every report receives a unique run ID. Qualified jobs are copied to a private named key-value store with the initial status `WAITING_FOR_USER`. When OpenAI mode creates a resume, the matching PDF is stored under a run-specific private key.
 
-This queue is the foundation for later selection and browser-assistance stages. It does not monitor email, open application pages, or submit forms yet.
+To save choices from a report, run the Actor in `select` mode with the same private queue-store name:
+
+```json
+{
+    "mode": "select",
+    "runId": "00000000-0000-4000-8000-000000000000",
+    "selectedJobNumbers": [1, 3, 6],
+    "applicationQueueStoreName": "job-application-queue"
+}
+```
+
+The Actor validates the run and job numbers, removes duplicate choices, and marks exactly those jobs as `READY`. Re-running the same selection is safe. Its `OUTPUT` record provides a compact confirmation for the next workflow stage.
+
+This does not monitor email yet. Selection input can be submitted through the Apify Console, API, CLI, or a future inbox/webhook adapter. It also does not open application pages or submit forms.
+
+## Clone and configure
+
+```bash
+git clone https://github.com/Saurabh2404/cloud-job-search-assistant.git
+cd cloud-job-search-assistant
+npm ci
+npm run build
+npm test
+apify login
+apify push
+```
+
+Create a private Apify Task in `search` mode for scheduled discovery. Submit `select` mode as a separate Actor run so the scheduled task's resume and search settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
 
 ## Scheduling
 

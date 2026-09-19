@@ -31,13 +31,22 @@ export async function createResumePdf(resume: ResumeContent): Promise<Buffer> {
         doc.on('error', reject);
     });
 
-    doc.font('Helvetica-Bold').fontSize(19).fillColor('#111827').text(resume.name, { align: 'center' });
-    doc.font('Helvetica').fontSize(8.5).fillColor('#374151').text(resume.contactLine, { align: 'center' });
-    doc.font('Helvetica-Bold').fontSize(9.5).fillColor('#111827').text(resume.headline, { align: 'center' });
-    addSection(doc, 'Professional Summary');
-    doc.font('Helvetica').fontSize(8.6).fillColor('#111827').text(resume.summary, { lineGap: 0.6 });
+    doc.font('Helvetica-Bold').fontSize(19).fillColor('#111827').text(resume.header.name, { align: 'center' });
+    doc.font('Helvetica').fontSize(8.5).fillColor('#374151').text(resume.header.contactLine, { align: 'center' });
+    doc.font('Helvetica-Bold').fontSize(9.5).fillColor('#111827').text(resume.header.headline, { align: 'center' });
+    addSection(doc, 'Profile');
+    doc.font('Helvetica').fontSize(8.6).fillColor('#111827').text(resume.profile, { lineGap: 0.6 });
+    addSection(doc, 'Education');
+    for (const education of resume.education) {
+        doc.font('Helvetica-Bold').fontSize(8.7).text(`${education.institution} | ${education.degree}`);
+        const educationDetails = [education.dates, education.location, education.details].filter(Boolean).join(' | ');
+        doc.font('Helvetica').fontSize(8).text(educationDetails);
+    }
     addSection(doc, 'Technical Skills');
-    doc.font('Helvetica').fontSize(8.5).text(resume.skills.join(' | '), { lineGap: 0.5 });
+    for (const group of resume.skillGroups) {
+        doc.font('Helvetica-Bold').fontSize(8.5).text(`${group.category}: `, { continued: true });
+        doc.font('Helvetica').text(group.items.join(', '));
+    }
     addSection(doc, 'Experience');
     for (const role of resume.experience) {
         doc.font('Helvetica-Bold').fontSize(9).text(`${role.company} | ${role.title}`);
@@ -46,15 +55,15 @@ export async function createResumePdf(resume: ResumeContent): Promise<Buffer> {
     }
     addSection(doc, 'Projects');
     for (const project of resume.projects) {
-        doc.font('Helvetica-Bold').fontSize(8.8).fillColor('#111827').text(`${project.name} | ${project.technologies}`);
+        const projectHeading = [project.name, project.technologies, project.link].filter(Boolean).join(' | ');
+        doc.font('Helvetica-Bold').fontSize(8.8).fillColor('#111827').text(projectHeading);
         addBullets(doc, project.bullets);
     }
-    addSection(doc, 'Education');
-    for (const education of resume.education) {
-        doc.font('Helvetica-Bold').fontSize(8.7).text(`${education.institution} | ${education.degree}`);
+    if (resume.codingProfiles.length) {
+        addSection(doc, 'Coding Profiles');
         doc.font('Helvetica')
-            .fontSize(8)
-            .text(`${education.dates}${education.details ? ` | ${education.details}` : ''}`);
+            .fontSize(8.2)
+            .text(resume.codingProfiles.map((profile) => `${profile.platform}: ${profile.label}`).join(' | '));
     }
     if (resume.achievements.length) {
         addSection(doc, 'Achievements');

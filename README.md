@@ -16,6 +16,8 @@ It does **not** submit applications automatically.
 - Human review before any application activity
 - Persistent application queue with unique report IDs and review statuses
 - Validated selection intake using a report run ID and job numbers
+- Gmail/IMAP reply monitoring with sender and command validation
+- Playwright application-page preflight with screenshots and field discovery
 
 ## Architecture
 
@@ -31,6 +33,10 @@ flowchart LR
     P --> E[Email review queue]
     B --> E
     F --> D[(Private Apify storage)]
+    E --> M[Reply monitor]
+    M --> Q[Validate selected job numbers]
+    Q --> W[Browser preflight]
+    W --> D
 ```
 
 ## Sample email
@@ -51,6 +57,10 @@ Required environment variables:
 | `SMTP_USER`         | SMTP sender account              | Yes         |
 | `SMTP_APP_PASSWORD` | SMTP application password        | Yes         |
 | `REPORT_RECIPIENT`  | Report destination               | Recommended |
+| `IMAP_USER`         | Reply-monitor mailbox            | Yes         |
+| `IMAP_APP_PASSWORD` | Reply-monitor app password       | Yes         |
+
+`IMAP_USER` and `IMAP_APP_PASSWORD` are optional when they are the same as the SMTP values. Gmail uses `imap.gmail.com:993` with SSL. OAuth is preferable for a multi-user/public service; app-password authentication is intended only for a private personal Actor.
 
 Never put real values in `.env.example`, Actor source files, screenshots, issues, or commits. See [SECURITY.md](SECURITY.md).
 
@@ -122,7 +132,35 @@ To save choices from a report, run the Actor in `select` mode with the same priv
 
 The Actor validates the run and job numbers, removes duplicate choices, and marks exactly those jobs as `READY`. Re-running the same selection is safe. Its `OUTPUT` record provides a compact confirmation for the next workflow stage.
 
-This does not monitor email yet. Selection input can be submitted through the Apify Console, API, CLI, or a future inbox/webhook adapter. It also does not open application pages or submit forms.
+Selection input can also be submitted directly through the Apify Console, API, or CLI. The workflow prepares application pages but does not complete or submit forms.
+
+### Email reply monitoring
+
+Run the Actor periodically in `monitor` mode:
+
+```json
+{
+    "mode": "monitor",
+    "applicationQueueStoreName": "job-application-queue",
+    "maximumReplyMessages": 20,
+    "prepareApplicationForms": true
+}
+```
+
+Reply from the exact address configured in `REPORT_RECIPIENT`. Include one explicit command line and the run ID anywhere in the reply:
+
+```text
+Apply jobs 1, 3, and 6
+Run: 00000000-0000-4000-8000-000000000000
+```
+
+The monitor ignores other senders and messages without `apply` or `prepare`. After a valid command, it updates the private queue, optionally performs browser preflight, sends a confirmation email, and marks the reply as read.
+
+### Application-page preparation
+
+Browser preflight opens each selected HTTPS application URL in isolated Playwright contexts. It records the final URL, page title, visible form fields, buttons, blockers, and a private screenshot. It blocks local/private URLs and does not type, upload, click submit, retain login sessions, or bypass site controls.
+
+Jobs are marked `PREPARED`, `USER_ACTION_REQUIRED`, or `FAILED`. Login, CAPTCHA, OTP, assessments, and legal questions always remain human steps. Many job sites require an authenticated interactive browser, so cloud preflight may stop at the login page; that is expected and is reported rather than bypassed.
 
 ## Clone and configure
 
@@ -136,7 +174,7 @@ apify login
 apify push
 ```
 
-Create a private Apify Task in `search` mode for scheduled discovery. Submit `select` mode as a separate Actor run so the scheduled task's resume and search settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
+Create a private Apify Task in `search` mode for scheduled discovery and a separate recurring Task in `monitor` mode for replies. Submit `select` or `prepare` as separate Actor runs so the scheduled search task's resume and settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
 
 ## Scheduling
 

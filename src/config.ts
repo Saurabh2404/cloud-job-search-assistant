@@ -40,13 +40,26 @@ const selectionInputSchema = z.object({
     applicationQueueStoreName: storeNameSchema,
 });
 
+const monitorInputSchema = z.object({
+    mode: z.literal('monitor'),
+    applicationQueueStoreName: storeNameSchema,
+    maximumReplyMessages: z.number().int().min(1).max(50).default(20),
+    prepareApplicationForms: z.boolean().default(true),
+});
+
+const prepareInputSchema = z.object({
+    mode: z.literal('prepare'),
+    runId: z.string().uuid(),
+    applicationQueueStoreName: storeNameSchema,
+});
+
 export const inputSchema = z.preprocess(
     (value) => {
         if (!value || typeof value !== 'object' || Array.isArray(value)) return value;
         const record = value as Record<string, unknown>;
         return { ...record, mode: record.mode ?? 'search' };
     },
-    z.discriminatedUnion('mode', [searchInputSchema, selectionInputSchema]),
+    z.discriminatedUnion('mode', [searchInputSchema, selectionInputSchema, monitorInputSchema, prepareInputSchema]),
 );
 
 export type ParsedInput = z.infer<typeof inputSchema>;

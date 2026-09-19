@@ -1,8 +1,10 @@
 export interface ActorInput {
-    mode?: 'search' | 'select';
+    mode?: 'search' | 'select' | 'monitor' | 'prepare';
     resumeText?: string;
     runId?: string;
     selectedJobNumbers?: number[];
+    prepareApplicationForms?: boolean;
+    maximumReplyMessages?: number;
     targetTitles?: string[];
     targetCompanies?: string[];
     excludedCompanies?: string[];
@@ -93,7 +95,8 @@ export interface SeenState {
     urls: Record<string, string>;
 }
 
-export type ApplicationStatus = 'WAITING_FOR_USER' | 'READY' | 'APPROVED' | 'SUBMITTED' | 'FAILED';
+export type ApplicationStatus =
+    'WAITING_FOR_USER' | 'READY' | 'PREPARED' | 'USER_ACTION_REQUIRED' | 'APPROVED' | 'SUBMITTED' | 'FAILED';
 
 export interface ApplicationQueueJob extends ScoredJob {
     status: ApplicationStatus;
@@ -108,8 +111,23 @@ export interface ApplicationQueueRun {
     runId: string;
     createdAt: string;
     generationMode: 'openai' | 'fallback';
-    status: 'WAITING_FOR_USER' | 'READY';
+    status: 'WAITING_FOR_USER' | 'READY' | 'PREPARED' | 'USER_ACTION_REQUIRED';
     jobs: ApplicationQueueJob[];
+}
+
+export interface ApplicationPagePreflight {
+    runId: string;
+    priority: number;
+    checkedAt: string;
+    requestedUrl: string;
+    finalUrl: string;
+    pageTitle: string;
+    status: 'PREPARED' | 'USER_ACTION_REQUIRED' | 'FAILED';
+    blockers: string[];
+    fields: { label: string; name: string; type: string; required: boolean }[];
+    buttons: string[];
+    screenshotKey?: string;
+    error?: string;
 }
 
 export interface ApplicationSelectionResult {

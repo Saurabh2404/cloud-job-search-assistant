@@ -7,7 +7,9 @@ import { parseInput } from './config.js';
 import { type EmailAttachment, sendDigest } from './email.js';
 import { scoreJobsWithoutAi } from './fallback.js';
 import { fetchJobs, hardRejectionReason, removeSeenJobs, saveSeenJobs } from './jobs.js';
+import { monitorSelectionReplies } from './mailbox.js';
 import { createResumePdf } from './pdf.js';
+import { prepareSelectedApplications } from './prepare.js';
 import { buildApplicationQueueRun, saveApplicationQueueRun, selectApplicationJobs } from './queue.js';
 import { buildCsv, buildEmailHtml } from './report.js';
 import type { ActorInput, ScoredJob } from './types.js';
@@ -25,6 +27,28 @@ await Actor.init();
 
 async function runActor(): Promise<void> {
     const input = parseInput(await Actor.getInput<ActorInput>());
+    if (input.mode === 'monitor') {
+        const replies = await monitorSelectionReplies({
+            storeName: input.applicationQueueStoreName,
+            maximumMessages: input.maximumReplyMessages,
+            prepareForms: input.prepareApplicationForms,
+        });
+        await Actor.setValue('OUTPUT', {
+            mode: 'monitor',
+            processedReplies: replies.length,
+            replies,
+        });
+        log.info('Mailbox monitoring completed.', { processedReplies: replies.length });
+        return;
+    }
+
+    if (input.mode === 'prepare') {
+        const preflights = await prepareSelectedApplications(input.applicationQueueStoreName, input.runId);
+        await Actor.setValue('OUTPUT', { mode: 'prepare', runId: input.runId, preflights });
+        log.info('Selected application pages prepared.', { runId: input.runId, pages: preflights.length });
+        return;
+    }
+
     if (input.mode === 'select') {
         const selection = await selectApplicationJobs({
             storeName: input.applicationQueueStoreName,

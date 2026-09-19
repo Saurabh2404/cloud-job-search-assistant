@@ -9,8 +9,13 @@
             "type": "string",
             "description": "Search for jobs or save job numbers selected from an existing report.",
             "editor": "select",
-            "enum": ["search", "select"],
-            "enumTitles": ["Search and email jobs", "Select jobs from a report"],
+            "enum": ["search", "select", "monitor", "prepare"],
+            "enumTitles": [
+                "Search and email jobs",
+                "Select jobs from a report",
+                "Monitor email replies",
+                "Prepare selected application pages"
+            ],
             "default": "search"
         },
         "resumeText": {
@@ -120,6 +125,22 @@
             "type": "array",
             "description": "Job numbers from the report to prepare for the next approval stage.",
             "editor": "json"
+        },
+        "maximumReplyMessages": {
+            "title": "Maximum replies per monitor run",
+            "type": "integer",
+            "description": "Maximum unread reply commands checked in one mailbox run.",
+            "editor": "number",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20
+        },
+        "prepareApplicationForms": {
+            "title": "Prepare application pages after a reply",
+            "type": "boolean",
+            "description": "Open selected application pages for field discovery and screenshots without filling or submitting them.",
+            "editor": "checkbox",
+            "default": true
         },
         "sendEmail": {
             "title": "Send email",

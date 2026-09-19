@@ -6,6 +6,7 @@ import { hardRejectionReason, normalizeJob } from '../src/jobs.js';
 import { parseSelectionCommand } from '../src/mailbox.js';
 import { createResumePdf } from '../src/pdf.js';
 import { applyApplicationSelection, buildApplicationQueueRun } from '../src/queue.js';
+import { tailoredResumeSchema } from '../src/resume.js';
 import { buildCsv, buildEmailHtml } from '../src/report.js';
 import type { ScoredJob } from '../src/types.js';
 
@@ -123,16 +124,22 @@ describe('artifacts', () => {
         expect(queueRun.jobs[0]).toMatchObject({
             status: 'WAITING_FOR_USER',
             resumeKey: 'RESUME-example-run-id-1',
+            resumeDataKey: 'RESUME-DATA-example-run-id-1',
         });
     });
 
     it('creates a one-page PDF', async () => {
         const pdf = await createResumePdf({
-            name: 'Test Candidate',
-            contactLine: 'candidate@example.com',
-            headline: 'Java Backend Developer',
-            summary: 'Backend developer building Java and Spring Boot services.',
-            skills: ['Java', 'Spring Boot', 'Oracle DB', 'REST APIs'],
+            header: {
+                name: 'Example Candidate',
+                contactLine: 'candidate@example.com | example.com/profile',
+                headline: 'Backend Software Engineer',
+            },
+            profile: 'Backend developer building reliable services and APIs.',
+            skillGroups: [
+                { category: 'Languages', items: ['Java', 'SQL'] },
+                { category: 'Technologies', items: ['Spring Boot', 'REST APIs'] },
+            ],
             experience: [
                 {
                     company: 'Example',
@@ -147,14 +154,50 @@ describe('artifacts', () => {
                     institution: 'Example Institute',
                     degree: 'BE Information Technology',
                     dates: '2021 - 2025',
-                    details: 'CGPA 8.11',
+                    location: 'Example City',
+                    details: 'GPA 3.75',
                 },
             ],
-            projects: [{ name: 'Search Engine', technologies: 'Java', bullets: ['Indexed coding problems.'] }],
+            projects: [
+                {
+                    name: 'Search Engine',
+                    technologies: 'Java',
+                    link: 'https://example.com/project',
+                    bullets: ['Indexed coding problems.'],
+                },
+            ],
+            codingProfiles: [{ platform: 'Example Platform', label: 'candidate', url: 'https://example.com' }],
             achievements: ['Competitive programming achievement.'],
+            targeting: {
+                targetRole: 'Backend Software Engineer',
+                supportedKeywords: ['Java', 'REST APIs'],
+                omittedUnsupportedKeywords: ['Example unsupported tool'],
+                integrityChecks: ['Identity preserved from source', 'Employment chronology preserved from source'],
+            },
         });
         expect(pdf.subarray(0, 4).toString()).toBe('%PDF');
         expect(pdf.length).toBeGreaterThan(1_000);
+    });
+
+    it('validates the generic structured resume contract', () => {
+        expect(
+            tailoredResumeSchema.safeParse({
+                header: { name: '', contactLine: '', headline: '' },
+                profile: '',
+                education: [],
+                skillGroups: [],
+                experience: [],
+                projects: [],
+                codingProfiles: [],
+                achievements: [],
+                targeting: {
+                    targetRole: '',
+                    supportedKeywords: [],
+                    omittedUnsupportedKeywords: [],
+                    integrityChecks: [],
+                },
+            }).success,
+        ).toBe(false);
     });
 
     it('marks only selected queue jobs as ready', () => {

@@ -1,6 +1,6 @@
 # Resume customization contract
 
-The Actor gives OpenAI the source resume, one normalized job record, a fixed section order, and explicit integrity rules. The model must return JSON matching the schema in `src/resume.ts`; it never returns executable LaTeX or free-form document markup.
+The Actor gives OpenAI the source resume, one normalized job record, the section order from the candidate's LaTeX-inspired template, and explicit integrity rules. The model must return JSON matching the schema in `src/resume.ts`; it never returns executable LaTeX or free-form document markup.
 
 ## Section structure
 
@@ -12,6 +12,8 @@ The Actor gives OpenAI the source resume, one normalized job record, a fixed sec
 6. Projects: source-supported technologies, links, and concise bullets
 7. Coding profiles: source-supported platform labels and links
 8. Achievements: only source-supported distinctions
+
+The PDF renderer keeps this compact, single-column hierarchy stable for every tailored resume. OpenAI can rewrite evidence bullets and reorder skills within their existing categories, but it cannot change employment chronology, invent facts, or turn the resume into a different structure.
 
 ## Integrity metadata
 

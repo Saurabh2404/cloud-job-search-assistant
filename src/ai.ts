@@ -91,7 +91,7 @@ export async function tailorResume(args: {
             {
                 role: 'system',
                 content:
-                    'You are a cautious senior resume editor. Return the requested structured resume, not LaTeX or prose commentary. Follow every supplied integrity rule. Optimize ordering, emphasis, and wording for the role while preserving all facts. Do not claim an ATS score or guaranteed outcome.',
+                    'You are a cautious senior resume editor. Return the requested structured resume, not LaTeX or prose commentary. Follow every supplied integrity and template-layout rule. Customize only ordering within sections, keyword emphasis, and wording for the role while preserving the source resume structure and all facts. Do not claim an ATS score or guaranteed outcome.',
             },
             {
                 role: 'user',

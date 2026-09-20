@@ -6,7 +6,7 @@ import { hardRejectionReason, normalizeJob } from '../src/jobs.js';
 import { parseSelectionCommand } from '../src/mailbox.js';
 import { createResumePdf } from '../src/pdf.js';
 import { applyApplicationSelection, buildApplicationQueueRun } from '../src/queue.js';
-import { tailoredResumeSchema } from '../src/resume.js';
+import { buildResumeCustomizationPayload, tailoredResumeSchema } from '../src/resume.js';
 import { buildCsv, buildEmailHtml } from '../src/report.js';
 import type { ScoredJob } from '../src/types.js';
 
@@ -226,6 +226,22 @@ describe('artifacts', () => {
                 },
             }).success,
         ).toBe(false);
+    });
+
+    it('supplies the LaTeX-inspired template layout to resume tailoring', () => {
+        const payload = buildResumeCustomizationPayload('Source resume', { id: 'job-1' });
+        expect(payload).toMatchObject({
+            sectionOrder: [
+                'profile',
+                'education',
+                'technical-skills',
+                'experience',
+                'projects',
+                'coding-profiles',
+                'achievements',
+            ],
+        });
+        expect(JSON.stringify(payload)).toContain('Single-column, one-page ATS-readable layout');
     });
 
     it('marks only selected queue jobs as ready', () => {

@@ -92,6 +92,7 @@ async function runActor(): Promise<void> {
             resumeText: input.resumeText,
             targetCompanies: input.targetCompanies,
             hybridLocations: input.hybridLocations,
+            workModes: input.workModes,
             salaryTarget: input.salaryTarget,
             searchLocation: input.searchLocation,
             maximumExperienceYears: input.maximumExperienceYears,

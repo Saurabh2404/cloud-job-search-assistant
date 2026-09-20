@@ -35,6 +35,15 @@ export function hardRejectionReason(job: JobCandidate, input: SearchInput): stri
     if (input.excludedCompanies.some((company) => job.company.toLowerCase().includes(company.toLowerCase()))) {
         return 'Current or excluded employer';
     }
+    if (
+        input.companyAllowlistOnly &&
+        !input.targetCompanies.some((company) => job.company.toLowerCase().includes(company.toLowerCase()))
+    ) {
+        return 'Not in approved employer list';
+    }
+    if (input.workModes.length === 1 && input.workModes[0] === 'hybrid' && !/hybrid/i.test(job.workMode)) {
+        return 'Not a hybrid role';
+    }
     if (/\b(on[- ]?site only|office only)\b/i.test(combined)) return 'On-site-only role';
     if (/\b(temporary|one[- ]month|1 month|unpaid)\b/i.test(combined)) return 'Temporary or unsuitable engagement';
     const experienceRequirement = combined.match(
@@ -56,7 +65,7 @@ export async function fetchJobs(input: SearchInput): Promise<JobCandidate[]> {
 
     const keywords = input.targetTitles.map((title) => `"${title}"`).join(' OR ');
     const batches = await Promise.all(
-        ['remote', 'hybrid'].map(async (workMode) => {
+        input.workModes.map(async (workMode) => {
             log.info(`Starting ${workMode} LinkedIn job search.`, { limit: input.maxResultsPerWorkMode });
             const run = await Actor.call(input.linkedinScraperActorId, {
                 keywords,

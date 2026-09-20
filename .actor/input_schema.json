@@ -34,9 +34,16 @@
         "targetCompanies": {
             "title": "Preferred companies",
             "type": "array",
-            "description": "Companies that receive a ranking preference when the role is otherwise suitable.",
+            "description": "Approved employers used for ranking or strict filtering.",
             "editor": "stringList",
             "default": []
+        },
+        "companyAllowlistOnly": {
+            "title": "Only approved employers",
+            "type": "boolean",
+            "description": "Reject every employer not listed in Preferred companies before ranking.",
+            "editor": "checkbox",
+            "default": false
         },
         "excludedCompanies": {
             "title": "Excluded companies",
@@ -51,6 +58,18 @@
             "description": "Locations accepted for hybrid roles.",
             "editor": "stringList",
             "default": []
+        },
+        "workModes": {
+            "title": "Work modes to search",
+            "type": "array",
+            "description": "Each selected mode creates one scraper query. Choose only Hybrid for a single hybrid-only query.",
+            "editor": "select",
+            "items": {
+                "type": "string",
+                "enum": ["remote", "hybrid"],
+                "enumTitles": ["Remote", "Hybrid"]
+            },
+            "default": ["remote", "hybrid"]
         },
         "searchLocation": {
             "title": "Search location",
@@ -71,7 +90,7 @@
         "maxResultsPerWorkMode": {
             "title": "Raw results per work mode",
             "type": "integer",
-            "description": "Maximum paid LinkedIn results for each of remote and hybrid searches.",
+            "description": "Maximum paid LinkedIn results per selected work mode.",
             "editor": "number",
             "minimum": 1,
             "maximum": 10,

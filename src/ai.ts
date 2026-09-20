@@ -29,6 +29,7 @@ export async function scoreJobs(args: {
     resumeText: string;
     targetCompanies: string[];
     hybridLocations: string[];
+    workModes: ('remote' | 'hybrid')[];
     salaryTarget: string;
     searchLocation: string;
     maximumExperienceYears: number;
@@ -53,7 +54,7 @@ export async function scoreJobs(args: {
                         hybridLocations: args.hybridLocations,
                         salaryTarget: args.salaryTarget,
                         searchLocation: args.searchLocation,
-                        workModes: ['remote', 'hybrid'],
+                        workModes: args.workModes,
                         maximumExperienceYears: args.maximumExperienceYears,
                     },
                     jobs: args.jobs,

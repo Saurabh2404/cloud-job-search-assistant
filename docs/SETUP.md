@@ -65,6 +65,8 @@ Its dataset items must expose compatible fields such as `job_url`, `job_title`, 
 
 Create an Apify Task from the deployed Actor and paste a private copy of [the search Task example](../examples/search-task.example.json). Replace every placeholder, especially `resumeText`, titles, locations, experience limit, and salary preference.
 
+For a hybrid-only enterprise search, set `workModes` to `["hybrid"]`, keep `maxResultsPerWorkMode` at `10`, list approved employers in `targetCompanies`, and set `companyAllowlistOnly` to `true`. The Actor then sends at most 10 fresh roles from those employers; it deliberately sends fewer when fewer good matches exist.
+
 Run it first with:
 
 - `sendEmail` set to `false`

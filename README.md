@@ -9,7 +9,8 @@ For a fresh deployment, follow the [complete cloud setup guide](docs/SETUP.md). 
 ## Features
 
 - Scheduled cloud execution; no always-on laptop required
-- Remote and hybrid job discovery through a child Apify Actor
+- Configurable remote and hybrid job discovery through a child Apify Actor
+- Optional strict approved-employer filtering before AI scoring
 - Persistent deduplication with an Apify key-value store
 - Configurable titles, employers, locations, experience ceiling, and salary target
 - Structured OpenAI scoring and one-page ATS-readable PDF resumes
@@ -95,7 +96,7 @@ In Apify Console:
 2. Open the Actor's environment-variable settings.
 3. Add the required variables listed above and mark credentials as secret.
 4. Open the Input tab and paste your resume text.
-5. Customize search location, titles, employers, experience ceiling, and limits.
+5. Customize search location, titles, employers, work modes, experience ceiling, and limits.
 6. Run a small test before enabling a schedule.
 
 An anonymized input template is available at [examples/input.example.json](examples/input.example.json).
@@ -185,6 +186,8 @@ apify push
 Create a private Apify Task in `search` mode for scheduled discovery and a separate recurring Task in `monitor` mode for replies. Submit `select` or `prepare` as separate Actor runs so the scheduled search task's resume and settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
 
 The LinkedIn scraper is selected through `linkedinScraperActorId`, so another compatible scraper can be used without editing source code. See the [setup guide](docs/SETUP.md#4-choose-a-linkedin-scraper) for its required input and output contract.
+
+Set `workModes` to `["hybrid"]` to issue one hybrid-only search. Set `companyAllowlistOnly` to `true` with a non-empty `targetCompanies` list to reject all unapproved employers before ranking. With strict filtering, a report can contain fewer than the requested maximum when there are not enough fresh approved-company roles.
 
 ## Scheduling
 

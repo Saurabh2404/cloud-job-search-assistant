@@ -70,6 +70,23 @@ describe('job validation', () => {
         });
         expect(job && hardRejectionReason(job, input)).toContain('exceeds 2 years');
     });
+
+    it('strictly rejects employers outside an approved hybrid-only search', () => {
+        const job = normalizeJob({
+            company: 'Small Example Startup',
+            job_title: 'Java Developer',
+            job_url: 'https://www.linkedin.com/jobs/view/789',
+            description: 'Build Java services.',
+            work_type: 'Remote',
+        });
+        const approvedInput = parseInput({
+            resumeText: 'Java backend developer with Spring Boot and Oracle DB experience. '.repeat(10),
+            targetCompanies: ['Barclays'],
+            companyAllowlistOnly: true,
+            workModes: ['hybrid'],
+        });
+        expect(job && hardRejectionReason(job, approvedInput)).toBe('Not in approved employer list');
+    });
 });
 
 describe('artifacts', () => {

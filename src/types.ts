@@ -9,6 +9,8 @@ export interface ActorInput {
     targetCompanies?: string[];
     excludedCompanies?: string[];
     hybridLocations?: string[];
+    workModes?: ('remote' | 'hybrid')[];
+    companyAllowlistOnly?: boolean;
     searchLocation?: string;
     maximumExperienceYears?: number;
     maxResultsPerWorkMode?: number;

@@ -185,9 +185,9 @@ apify push
 
 Create a private Apify Task in `search` mode for scheduled discovery and a separate recurring Task in `monitor` mode for replies. Submit `select` or `prepare` as separate Actor runs so the scheduled search task's resume and settings remain unchanged. Each user should choose unique `stateStoreName` and `applicationQueueStoreName` values within their own Apify account.
 
-The LinkedIn scraper is selected through `linkedinScraperActorId`, so another compatible scraper can be used without editing source code. See the [setup guide](docs/SETUP.md#4-choose-a-linkedin-scraper) for its required input and output contract.
+The LinkedIn scraper is selected through `linkedinScraperActorId`, with `linkedinScraperMode` controlling its input contract. Use `company-filtered` mode with `labrat011/linkedin-jobs-scraper` when the target-company list is an employer requirement rather than a ranking preference. See the [setup guide](docs/SETUP.md#4-choose-a-linkedin-scraper) for configuration and output details.
 
-Set `workModes` to `["hybrid"]` to issue one hybrid-only search. Set `companyAllowlistOnly` to `true` with a non-empty `targetCompanies` list to reject all unapproved employers before ranking. `maxResultsPerWorkMode` is the raw scan limit, while `maxQualifiedJobs` is the email limit; scanning a wider pool such as 50 helps find enough approved-company roles without emailing more than 10. With strict filtering, a report can still contain fewer than the requested maximum when there are not enough fresh approved-company roles.
+Set `workModes` to `["hybrid"]` to retain listings that visibly mention hybrid work. Set `companyAllowlistOnly` to `true` with a non-empty `targetCompanies` list to reject all unapproved employers before ranking. `maxResultsPerWorkMode` is the raw scan limit, while `maxQualifiedJobs` is the email limit; scanning a wider pool such as 50 helps find enough approved-company roles without emailing more than 10. With strict filtering, a report can still contain fewer than the requested maximum when there are not enough fresh approved-company roles.
 
 ## Scheduling
 

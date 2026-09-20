@@ -48,9 +48,13 @@ Never paste these values into Actor input, source files, build logs, GitHub issu
 
 ## 4. Choose a LinkedIn scraper
 
-The default is `apimaestro/linkedin-jobs-scraper-api`. A replacement can be set with `linkedinScraperActorId` using the `username/actor-name` format.
+The default is `apimaestro/linkedin-jobs-scraper-api` in `generic` mode. It is useful for a broad search but cannot target the employer list at source, so strict employer filtering can legitimately yield no results.
 
-A replacement scraper must accept these input fields:
+For an enterprise-only shortlist, set `linkedinScraperActorId` to `labrat011/linkedin-jobs-scraper` and `linkedinScraperMode` to `company-filtered`. It accepts the configured `targetCompanies` as `companyFilter`, searches the configured titles, and fetches job descriptions for matching and resume tailoring. Its current public price is listed per returned job, so keep `maxResultsPerWorkMode` capped.
+
+The company-filtered source does not receive a trustworthy work-arrangement value from public LinkedIn listings. For a hybrid-only Task, this Actor keeps only listings whose visible description mentions `hybrid`; treat that as a text-based signal, not a platform-verified work-mode field.
+
+A generic replacement scraper must accept these input fields:
 
 - `keywords`
 - `location`
@@ -65,7 +69,7 @@ Its dataset items must expose compatible fields such as `job_url`, `job_title`, 
 
 Create an Apify Task from the deployed Actor and paste a private copy of [the search Task example](../examples/search-task.example.json). Replace every placeholder, especially `resumeText`, titles, locations, experience limit, and salary preference.
 
-For a hybrid-only enterprise search, set `workModes` to `["hybrid"]`, use a scan limit such as `50` in `maxResultsPerWorkMode`, list approved employers in `targetCompanies`, and set `companyAllowlistOnly` to `true`. The Actor scans up to that number of hybrid listings, then sends at most 10 fresh roles from approved employers; it deliberately sends fewer when fewer good matches exist.
+For a hybrid-only enterprise search, use the company-filtered mode above, set `workModes` to `["hybrid"]`, use a scan limit such as `50` in `maxResultsPerWorkMode`, list approved employers in `targetCompanies`, and set `companyAllowlistOnly` to `true`. The Actor sends at most 10 fresh roles from those employers and deliberately sends fewer when fewer good matches exist.
 
 Run it first with:
 

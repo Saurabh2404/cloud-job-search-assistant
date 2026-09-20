@@ -18,6 +18,7 @@ export interface ActorInput {
     salaryTarget?: string;
     openAiModel?: string;
     linkedinScraperActorId?: string;
+    linkedinScraperMode?: 'generic' | 'company-filtered';
     stateStoreName?: string;
     applicationQueueStoreName?: string;
     sendEmail?: boolean;
@@ -38,6 +39,13 @@ export interface RawJob {
     description?: string;
     apply_url?: string;
     is_easy_apply?: boolean;
+    jobId?: string;
+    title?: string;
+    url?: string;
+    companyUrl?: string;
+    postedDate?: string;
+    applicantCount?: string;
+    descriptionHtml?: string;
 }
 
 export interface JobCandidate {

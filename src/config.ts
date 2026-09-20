@@ -35,6 +35,7 @@ const searchInputSchema = z
             .string()
             .regex(/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+$/)
             .default('apimaestro/linkedin-jobs-scraper-api'),
+        linkedinScraperMode: z.enum(['generic', 'company-filtered']).default('generic'),
         stateStoreName: z
             .string()
             .regex(/^[a-z0-9-]+$/)

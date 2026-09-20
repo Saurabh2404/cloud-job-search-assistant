@@ -8,24 +8,28 @@ function text(value: unknown, fallback = ''): string {
 }
 
 export function normalizeJob(raw: RawJob): JobCandidate | null {
-    const url = text(raw.job_url);
-    const title = text(raw.job_title);
+    const url = text(raw.job_url ?? raw.url);
+    const title = text(raw.job_title ?? raw.title);
     const company = text(raw.company);
     if (!url.startsWith('https://www.linkedin.com/jobs/') || !title || !company) return null;
 
+    const description = text(raw.description ?? raw.descriptionHtml).slice(0, 30_000);
+    const workMode =
+        text(raw.work_type) || (/\bhybrid\b/i.test(description) ? 'Hybrid (description match)' : 'Not specified');
+
     return {
-        id: text(raw.job_id, url.split('/').filter(Boolean).slice(-1)[0] ?? url),
+        id: text(raw.job_id ?? raw.jobId, url.split('/').filter(Boolean).slice(-1)[0] ?? url),
         company,
         title,
         url,
         applyUrl: text(raw.apply_url, url),
-        companyUrl: text(raw.company_url),
+        companyUrl: text(raw.company_url ?? raw.companyUrl),
         location: text(raw.location, 'Not specified'),
-        workMode: text(raw.work_type, 'Not specified'),
+        workMode,
         salary: text(raw.salary, 'Not disclosed'),
-        postedAt: text(raw.posted_at, 'Not specified'),
-        applicants: text(raw.applicant_count, 'Not available'),
-        description: text(raw.description).slice(0, 30_000),
+        postedAt: text(raw.posted_at ?? raw.postedDate, 'Not specified'),
+        applicants: text(raw.applicant_count ?? raw.applicantCount, 'Not available'),
+        description,
         easyApply: raw.is_easy_apply === true,
     };
 }
@@ -41,8 +45,12 @@ export function hardRejectionReason(job: JobCandidate, input: SearchInput): stri
     ) {
         return 'Not in approved employer list';
     }
-    if (input.workModes.length === 1 && input.workModes[0] === 'hybrid' && !/hybrid/i.test(job.workMode)) {
-        return 'Not a hybrid role';
+    if (
+        input.workModes.length === 1 &&
+        input.workModes[0] === 'hybrid' &&
+        !/\bhybrid\b/i.test(`${job.workMode}\n${job.description}`)
+    ) {
+        return 'No hybrid reference in the job listing';
     }
     if (/\b(on[- ]?site only|office only)\b/i.test(combined)) return 'On-site-only role';
     if (/\b(temporary|one[- ]month|1 month|unpaid)\b/i.test(combined)) return 'Temporary or unsuitable engagement';
@@ -64,17 +72,31 @@ export async function fetchJobs(input: SearchInput): Promise<JobCandidate[]> {
     }
 
     const keywords = input.targetTitles.map((title) => `"${title}"`).join(' OR ');
+    const searchModes = input.linkedinScraperMode === 'company-filtered' ? ['approved companies'] : input.workModes;
     const batches = await Promise.all(
-        input.workModes.map(async (workMode) => {
+        searchModes.map(async (workMode) => {
             log.info(`Starting ${workMode} LinkedIn job search.`, { limit: input.maxResultsPerWorkMode });
-            const run = await Actor.call(input.linkedinScraperActorId, {
-                keywords,
-                location: input.searchLocation,
-                remote: workMode,
-                sort: 'recent',
-                date_posted: 'day',
-                limit: input.maxResultsPerWorkMode,
-            });
+            const childInput =
+                input.linkedinScraperMode === 'company-filtered'
+                    ? {
+                          keywordsList: input.targetTitles,
+                          location: input.searchLocation,
+                          companyFilter: input.targetCompanies,
+                          datePosted: 'past_24_hours',
+                          fetchJobDetails: true,
+                          titleOnly: false,
+                          maxResults: input.maxResultsPerWorkMode,
+                          maxResultsPerSearch: input.maxResultsPerWorkMode,
+                      }
+                    : {
+                          keywords,
+                          location: input.searchLocation,
+                          remote: workMode,
+                          sort: 'recent',
+                          date_posted: 'day',
+                          limit: input.maxResultsPerWorkMode,
+                      };
+            const run = await Actor.call(input.linkedinScraperActorId, childInput);
             if (run.status !== 'SUCCEEDED' || !run.defaultDatasetId) {
                 throw new Error(`LinkedIn child Actor failed for ${workMode}: ${run.status}`);
             }

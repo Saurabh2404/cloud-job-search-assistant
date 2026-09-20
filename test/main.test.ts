@@ -49,6 +49,18 @@ describe('job validation', () => {
         ).toMatchObject({ linkedinScraperActorId: 'example-user/example-linkedin-scraper' });
     });
 
+    it('accepts a company-filtered LinkedIn scraper mode', () => {
+        expect(
+            parseInput({
+                resumeText: 'Backend engineer experienced with APIs, databases, testing, and cloud delivery. '.repeat(
+                    5,
+                ),
+                linkedinScraperActorId: 'labrat011/linkedin-jobs-scraper',
+                linkedinScraperMode: 'company-filtered',
+            }),
+        ).toMatchObject({ linkedinScraperMode: 'company-filtered' });
+    });
+
     it('allows a wider raw scan while keeping qualified output separately capped', () => {
         expect(
             parseInput({
@@ -70,6 +82,24 @@ describe('job validation', () => {
             work_type: 'Remote',
         });
         expect(job).toMatchObject({ id: '123', company: 'Example', title: 'Java Developer', workMode: 'Remote' });
+    });
+
+    it('normalizes the company-filtered scraper response and detects hybrid text', () => {
+        const job = normalizeJob({
+            company: 'Example Enterprise',
+            title: 'Java Developer',
+            jobId: '456',
+            url: 'https://www.linkedin.com/jobs/view/456',
+            postedDate: 'Today',
+            applicantCount: '12 applicants',
+            description: 'This is a hybrid role with three days in the office.',
+        });
+        expect(job).toMatchObject({ id: '456', workMode: 'Hybrid (description match)', postedAt: 'Today' });
+        const hybridInput = parseInput({
+            resumeText: 'Java backend developer with Spring Boot and Oracle DB experience. '.repeat(10),
+            workModes: ['hybrid'],
+        });
+        expect(job && hardRejectionReason(job, hybridInput)).toBe('');
     });
 
     it('rejects a hard three-year requirement', () => {

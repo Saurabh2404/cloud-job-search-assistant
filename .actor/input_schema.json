@@ -126,6 +126,15 @@
             "editor": "textfield",
             "default": "apimaestro/linkedin-jobs-scraper-api"
         },
+        "linkedinScraperMode": {
+            "title": "LinkedIn scraper mode",
+            "type": "string",
+            "description": "Use Company-filtered for an employer allowlist. That source verifies employer names and fetches job descriptions before this Actor applies its own checks.",
+            "editor": "select",
+            "enum": ["generic", "company-filtered"],
+            "enumTitles": ["Generic job search", "Company-filtered job search"],
+            "default": "generic"
+        },
         "stateStoreName": {
             "title": "Persistent state store name",
             "type": "string",

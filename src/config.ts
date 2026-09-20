@@ -27,7 +27,7 @@ const searchInputSchema = z
             .default(['remote', 'hybrid']),
         searchLocation: z.string().min(2).default('United States'),
         maximumExperienceYears: z.number().int().min(0).max(50).default(5),
-        maxResultsPerWorkMode: z.number().int().min(1).max(10).default(10),
+        maxResultsPerWorkMode: z.number().int().min(1).max(50).default(10),
         maxQualifiedJobs: z.number().int().min(1).max(10).default(10),
         salaryTarget: z.string().default('Not specified'),
         openAiModel: z.string().default('gpt-5.6-terra'),

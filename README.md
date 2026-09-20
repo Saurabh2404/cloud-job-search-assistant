@@ -187,7 +187,7 @@ Create a private Apify Task in `search` mode for scheduled discovery and a separ
 
 The LinkedIn scraper is selected through `linkedinScraperActorId`, so another compatible scraper can be used without editing source code. See the [setup guide](docs/SETUP.md#4-choose-a-linkedin-scraper) for its required input and output contract.
 
-Set `workModes` to `["hybrid"]` to issue one hybrid-only search. Set `companyAllowlistOnly` to `true` with a non-empty `targetCompanies` list to reject all unapproved employers before ranking. With strict filtering, a report can contain fewer than the requested maximum when there are not enough fresh approved-company roles.
+Set `workModes` to `["hybrid"]` to issue one hybrid-only search. Set `companyAllowlistOnly` to `true` with a non-empty `targetCompanies` list to reject all unapproved employers before ranking. `maxResultsPerWorkMode` is the raw scan limit, while `maxQualifiedJobs` is the email limit; scanning a wider pool such as 50 helps find enough approved-company roles without emailing more than 10. With strict filtering, a report can still contain fewer than the requested maximum when there are not enough fresh approved-company roles.
 
 ## Scheduling
 

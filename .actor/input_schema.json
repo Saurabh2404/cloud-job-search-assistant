@@ -88,12 +88,12 @@
             "default": 5
         },
         "maxResultsPerWorkMode": {
-            "title": "Raw results per work mode",
+            "title": "Raw jobs to scan per work mode",
             "type": "integer",
-            "description": "Maximum paid LinkedIn results per selected work mode.",
+            "description": "Maximum LinkedIn jobs to scan before strict filtering. This can exceed the emailed job limit so approved employers are not missed.",
             "editor": "number",
             "minimum": 1,
-            "maximum": 10,
+            "maximum": 50,
             "default": 10
         },
         "maxQualifiedJobs": {

@@ -49,6 +49,18 @@ describe('job validation', () => {
         ).toMatchObject({ linkedinScraperActorId: 'example-user/example-linkedin-scraper' });
     });
 
+    it('allows a wider raw scan while keeping qualified output separately capped', () => {
+        expect(
+            parseInput({
+                resumeText: 'Backend engineer experienced with APIs, databases, testing, and cloud delivery. '.repeat(
+                    5,
+                ),
+                maxResultsPerWorkMode: 50,
+                maxQualifiedJobs: 10,
+            }),
+        ).toMatchObject({ maxResultsPerWorkMode: 50, maxQualifiedJobs: 10 });
+    });
+
     it('normalizes a LinkedIn job', () => {
         const job = normalizeJob({
             company: 'Example',
